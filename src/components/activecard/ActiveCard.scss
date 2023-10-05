@@ -1,0 +1,37 @@
+$bp-largest: 75em; // 1200px
+$bp-large: 68.75em; // 1100px
+$bp-medium: 56.25em; // 900px
+$bp-small: 37.5em; // 600px
+$bp-phone: 48em;
+$bp-smallest: 31.25em; // 500px
+
+.active-card {
+  width: 30rem;
+
+  @media only screen and (max-width: $bp-phone) {
+    width: 100%;
+  }
+
+  .container {
+    border-radius: 1rem;
+    background-color: var(--color-primary-light);
+    font-size: 1.6rem;
+    color: var(--color-white);
+    height: 43.5rem;
+    display: flex;
+    flex-direction: column;
+
+    button {
+      border: none;
+      outline: none;
+      color: var(--color-white);
+      background: var(--background);
+      padding: 1.2rem 2rem;
+      border-radius: 1rem;
+      width: 100%;
+      font-size: 1.6rem;
+      cursor: pointer;
+      margin-top: auto;
+    }
+  }
+}

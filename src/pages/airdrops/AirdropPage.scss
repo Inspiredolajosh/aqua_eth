@@ -1,0 +1,22 @@
+.airdrop {
+  display: flex;
+  justify-content: center;
+  color: var(--color-white);
+  margin-top: 10rem;
+  font-size: 4rem;
+
+  .container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    margin: 10rem auto;
+
+    img {
+      width: 50%;
+      margin: 0 auto;
+    }
+    p {
+      text-align: center;
+    }
+  }
+}

@@ -1,0 +1,35 @@
+$bp-largest: 75em; // 1200px
+$bp-large: 68.75em; // 1100px
+$bp-medium: 56.25em; // 900px
+$bp-small: 37.5em; // 600px
+$bp-phone: 48em;
+$bp-smallest: 31.25em; // 500px
+
+.footer {
+  background-color: #282828;
+  display: flex;
+  color: var(--color-white);
+
+  @media only screen and (max-width: $bp-medium) {
+    margin-top: 5rem;
+  }
+
+  .container {
+    width: 50%;
+    padding: 5rem 0;
+    margin-left: 10rem;
+    .social {
+      display: flex;
+      gap: 2rem;
+      img {
+        width: 5%;
+      }
+    }
+
+    p {
+      font-size: 1.6rem;
+      font-weight: 500;
+      margin-top: 1rem;
+    }
+  }
+}

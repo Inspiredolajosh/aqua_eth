@@ -1,0 +1,42 @@
+$bp-largest: 75em; // 1200px
+$bp-large: 68.75em; // 1100px
+$bp-medium: 56.25em; // 900px
+$bp-small: 37.5em; // 600px
+$bp-phone: 48em;
+$bp-smallest: 31.25em; // 500px
+
+.launchpad {
+  display: flex;
+  justify-content: center;
+  padding: 10rem 0;
+  position: relative;
+  z-index: -100;
+
+  .container {
+    color: var(--color-white);
+    padding: 3rem 5rem;
+
+    .row {
+      display: flex;
+      gap: 5rem;
+
+      @media only screen and (max-width: $bp-medium) {
+        gap: 2rem;
+        margin: 0 auto;
+        flex-wrap: wrap;
+      }
+
+      @media only screen and (max-width: $bp-phone) {
+        flex-direction: column;
+      }
+    }
+
+    h1 {
+      margin: 3rem 0;
+
+      @media only screen and (max-width: $bp-medium) {
+        text-align: center;
+      }
+    }
+  }
+}

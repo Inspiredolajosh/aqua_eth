@@ -1,0 +1,80 @@
+$bp-largest: 75em; // 1200px
+$bp-large: 68.75em; // 1100px
+$bp-medium: 56.25em; // 900px
+$bp-small: 37.5em; // 600px
+$bp-phone: 48em;
+$bp-smallest: 31.25em; // 500px
+
+.claims {
+  padding: 15rem 10rem 0 10rem;
+
+  .container {
+    color: var(--color-white);
+
+    h1 {
+      font-size: 4rem;
+      font-weight: 500;
+      margin-top: 4rem;
+    }
+
+    p {
+      font-size: 1.6rem;
+      color: #b8b8b8;
+    }
+
+    .emoji {
+      display: flex;
+      margin-top: 3rem;
+      gap: 1rem;
+
+      p {
+        .link {
+          margin-left: 1rem;
+          color: var(--color-white);
+        }
+      }
+    }
+
+    .user {
+      display: flex;
+      align-items: center;
+      gap: 4rem;
+
+      @media only screen and (max-width: $bp-phone) {
+        flex-direction: column;
+      }
+
+      img {
+        width: 5%;
+        @media only screen and (max-width: $bp-phone) {
+          width: 60%;
+        }
+      }
+
+      &__wallet {
+        display: flex;
+        justify-content: center;
+        gap: 2rem;
+        background-color: var(--bg-dark);
+        color: #b8b8b8;
+        padding: 2rem 4rem;
+        font-size: 1.6rem;
+        border-radius: 1rem;
+
+        span {
+          color: var(--color-white);
+          font-size: 2rem;
+
+          @media only screen and (max-width: $bp-phone) {
+            display: block;
+          }
+        }
+
+        .divider {
+          width: 1px;
+          background-color: #b8b8b8;
+        }
+      }
+    }
+  }
+}
