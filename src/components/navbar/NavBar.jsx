@@ -4,16 +4,20 @@ import Modal from "../../components/modal/Modal";
 import logo from "../../assets/images/logo.png";
 import Overlay from "../../components/overlay/Overlay";
 import { NavLink } from "react-router-dom";
-import { useSelector } from "react-redux"; // Import useSelector from Redux
+import { useSelector, useDispatch } from "react-redux"; // Import useSelector and useDispatch from Redux
+import { disconnectWallet, switchNetwork } from "../../redux/actions"; // Import your Redux actions
+import NetworkPopup from "../NetworkPopup/networkPopup"; // Import the NetworkPopup component
 
 const NavBar = () => {
   const [menuOpen, setMenuOpen] = useState(false);
   const [isModalOpen, setModalOpen] = useState(false);
+  const [isNetworkPopupOpen, setNetworkPopupOpen] = useState(false);
 
   // Use useSelector to access state from Redux
-  const isConnected = useSelector(state => state.isConnected);
-  const defaultAccount = useSelector(state => state.defaultAccount);
-  const networkChainId = useSelector(state => state.networkChainId);
+  const isConnected = useSelector((state) => state.wallet.isConnected);
+  const selectedNetwork = useSelector((state) => state.wallet.selectedNetwork);
+
+  const dispatch = useDispatch(); // Initialize the dispatch function
 
   const handleClick = () => {
     setMenuOpen(!menuOpen);
@@ -28,8 +32,21 @@ const NavBar = () => {
     setModalOpen(true);
   };
 
-  const handleCloseModal = () => {
-    setModalOpen(false);
+  const handleDisconnectWallet = () => {
+    dispatch(disconnectWallet()); // Dispatch action to disconnect the wallet
+  };
+
+  const handleNetworkSwitch = () => {
+    setNetworkPopupOpen(true);
+  };
+
+  const handleCloseNetworkPopup = () => {
+    setNetworkPopupOpen(false);
+  };
+
+  const handleNetworkSelection = (network) => {
+    dispatch(switchNetwork(network)); // Dispatch action to switch the network
+    handleCloseNetworkPopup();
   };
 
   useEffect(() => {
@@ -64,7 +81,12 @@ const NavBar = () => {
         </div>
 
         <div className="nav__btn">
-          <button onClick={handleConnectWallet}>Connect Wallet</button>
+          {isConnected ? (
+            <button onClick={handleDisconnectWallet}>Disconnect Wallet</button>
+          ) : (
+            <button onClick={handleConnectWallet}>Connect Wallet</button>
+          )}
+          <button onClick={handleNetworkSwitch}>Switch Network</button>
         </div>
 
         <div className="burger" onClick={handleClick}>
@@ -77,8 +99,15 @@ const NavBar = () => {
       {isModalOpen && (
         <>
           <Overlay />
-          <Modal isOpen={isModalOpen} onClose={handleCloseModal} />
+          <Modal isOpen={isModalOpen} onClose={() => setModalOpen(false)} />
         </>
+      )}
+
+      {isNetworkPopupOpen && (
+        <NetworkPopup
+          onClose={handleCloseNetworkPopup}
+          onSelectNetwork={handleNetworkSelection}
+        />
       )}
     </nav>
   );
