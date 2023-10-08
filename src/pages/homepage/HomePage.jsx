@@ -11,7 +11,7 @@ const HomePage = () => {
         <div className="container">
           <div className="col col--1">
             <h1>Empower your Project With Aquapad</h1>
-``            <p>
+            <p>
               The blockchain ecosystem has witnessed exponential growth,
               resulting in the emergence of numerous blockchain networks.
               However, this fragmentation has created challenges for projects

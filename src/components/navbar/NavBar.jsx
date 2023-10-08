@@ -1,23 +1,25 @@
 import React, { useState, useEffect } from "react";
 import "./NavBar.scss";
-import Modal from "../../components/modal/Modal";
 import logo from "../../assets/images/logo.png";
 import Overlay from "../../components/overlay/Overlay";
 import { NavLink } from "react-router-dom";
-import { useSelector, useDispatch } from "react-redux"; // Import useSelector and useDispatch from Redux
-import { disconnectWallet, switchNetwork } from "../../redux/actions"; // Import your Redux actions
-import NetworkPopup from "../NetworkPopup/networkPopup"; // Import the NetworkPopup component
+import NetworkPopup from "../NetworkPopup/networkPopup";
+import { useMyContext } from "../../../myContext";
+import { ethers } from "ethers";
 
 const NavBar = () => {
   const [menuOpen, setMenuOpen] = useState(false);
-  const [isModalOpen, setModalOpen] = useState(false);
-  const [isNetworkPopupOpen, setNetworkPopupOpen] = useState(false);
+  const [isConnected, setIsConnected] = useState(
+    localStorage.getItem("isConnected") === "true" // Retrieve the connected state from localStorage
+  );
 
-  // Use useSelector to access state from Redux
-  const isConnected = useSelector((state) => state.wallet.isConnected);
-  const selectedNetwork = useSelector((state) => state.wallet.selectedNetwork);
-
-  const dispatch = useDispatch(); // Initialize the dispatch function
+  const {
+    disconnectWallet,
+    switchNetwork,
+    toggleNetworkPopup,
+    state,
+    connectWallet, // Include connectWallet from the context
+  } = useMyContext();
 
   const handleClick = () => {
     setMenuOpen(!menuOpen);
@@ -27,26 +29,25 @@ const NavBar = () => {
     setMenuOpen(false);
   };
 
-  const handleConnectWallet = (event) => {
-    event.preventDefault();
-    setModalOpen(true);
+  const handleConnectWallet = async () => {
+    toggleNetworkPopup();
+  };
+
+  const handleNetworkSelection = async (network) => {
+    switchNetwork(network);
+    toggleNetworkPopup();
+
+    // Call the connectWallet function from the context
+    connectWallet(network);
+    setIsConnected(true); // Set connected state to true
+    localStorage.setItem("isConnected", "true"); // Store connected state in localStorage
+    window.location.reload();
   };
 
   const handleDisconnectWallet = () => {
-    dispatch(disconnectWallet()); // Dispatch action to disconnect the wallet
-  };
-
-  const handleNetworkSwitch = () => {
-    setNetworkPopupOpen(true);
-  };
-
-  const handleCloseNetworkPopup = () => {
-    setNetworkPopupOpen(false);
-  };
-
-  const handleNetworkSelection = (network) => {
-    dispatch(switchNetwork(network)); // Dispatch action to switch the network
-    handleCloseNetworkPopup();
+    disconnectWallet();
+    setIsConnected(false); // Set connected state to false
+    localStorage.setItem("isConnected", "false"); // Store connected state in localStorage
   };
 
   useEffect(() => {
@@ -56,7 +57,6 @@ const NavBar = () => {
       document.body.classList.remove("menu-open");
     }
 
-    // Clean up the class when the component unmounts
     return () => {
       document.body.classList.remove("menu-open");
     };
@@ -77,17 +77,21 @@ const NavBar = () => {
           >
             Home
           </NavLink>
-          {/* Add other navigation links here */}
         </div>
 
         <div className="nav__btn">
-          {isConnected ? (
-            <button onClick={handleDisconnectWallet}>Disconnect Wallet</button>
-          ) : (
-            <button onClick={handleConnectWallet}>Connect Wallet</button>
-          )}
-          <button onClick={handleNetworkSwitch}>Switch Network</button>
-        </div>
+  {isConnected ? (
+    <>
+      <button onClick={handleDisconnectWallet} style={{ marginRight: '10px' }}>
+        Disconnect
+      </button>
+      <button onClick={toggleNetworkPopup}>Switch Network</button>
+    </>
+  ) : (
+    <button onClick={handleConnectWallet}>Connect Wallet</button>
+  )}
+</div>
+
 
         <div className="burger" onClick={handleClick}>
           <div className="lines"></div>
@@ -96,16 +100,9 @@ const NavBar = () => {
         </div>
       </div>
 
-      {isModalOpen && (
-        <>
-          <Overlay />
-          <Modal isOpen={isModalOpen} onClose={() => setModalOpen(false)} />
-        </>
-      )}
-
-      {isNetworkPopupOpen && (
+      {state.isNetworkPopupOpen && (
         <NetworkPopup
-          onClose={handleCloseNetworkPopup}
+          onClose={() => toggleNetworkPopup()}
           onSelectNetwork={handleNetworkSelection}
         />
       )}

@@ -1,28 +1,16 @@
 import React from "react";
 import ReactDOM from "react-dom";
-import { Provider } from "react-redux";
-import { createStore, combineReducers } from "redux";
-import { walletReducer } from "./redux/actions"; 
 import "./index.scss";
-
 import router from "./routes";
 import { RouterProvider } from "react-router";
+import { MyProvider } from "../myContext";
+import { createRoot } from "react-dom/client";
 
-// Combine your reducers
-const rootReducer = combineReducers({
-  wallet: walletReducer,
-  // Add other reducers if needed
-});
-
-// Create the Redux store
-const store = createStore(rootReducer);
-
-// ...
-
-ReactDOM.createRoot(document.getElementById("root")).render(
+// Wrap your entire application with createRoot and MyProvider
+createRoot(document.getElementById("root")).render(
   <React.StrictMode>
-    <Provider store={store}>
+    <MyProvider>
       <RouterProvider router={router} />
-    </Provider>
+    </MyProvider>
   </React.StrictMode>
 );

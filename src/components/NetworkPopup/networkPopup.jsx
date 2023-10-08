@@ -1,14 +1,11 @@
 import React from "react";
-import "./networkPopup.scss";
-import { useDispatch, useSelector } from "react-redux";
-import { switchNetwork } from "../../redux/actions"; // Import your switchNetwork action
+import "./NetworkPopup.scss";
+import { useMyContext } from "../../../myContext";
 
 const NetworkPopup = ({ onClose, onSelectNetwork }) => {
-  const dispatch = useDispatch();
-  const selectedNetwork = useSelector((state) => state.wallet.selectedNetwork);
+  const { state } = useMyContext();
 
   const handleNetworkSelect = (network) => {
-    dispatch(switchNetwork(network)); // Dispatch action to switch the network
     onSelectNetwork(network); // Callback to handle network selection in NavBar
     onClose();
   };
@@ -20,23 +17,47 @@ const NetworkPopup = ({ onClose, onSelectNetwork }) => {
         <ul>
           <li
             onClick={() => handleNetworkSelect("Ethereum")}
-            className={selectedNetwork === "Ethereum" ? "active" : ""}
+            className={state.selectedNetwork === "Ethereum" ? "active" : ""}
           >
-            Ethereum
+            Ethereum Mainnet
+          </li>
+          <li
+            onClick={() => handleNetworkSelect("Goerli")}
+            className={state.selectedNetwork === "Goerli" ? "active" : ""}
+          >
+            Ethereum Goerli Testnet
+          </li>
+          <li
+            onClick={() => handleNetworkSelect("Sepolia")}
+            className={state.selectedNetwork === "Sepolia" ? "active" : ""}
+          >
+            Ethereum Sepolia Testnet
           </li>
           <li
             onClick={() => handleNetworkSelect("BSC")}
-            className={selectedNetwork === "BSC" ? "active" : ""}
+            className={state.selectedNetwork === "BSC" ? "active" : ""}
           >
-            Binance Smart Chain (BSC)
+            Binance Smart Chain (BSC) Mainnet
           </li>
           <li
-            onClick={() => handleNetworkSelect("Matic")}
-            className={selectedNetwork === "Matic" ? "active" : ""}
+            onClick={() => handleNetworkSelect("BSC Testnet")}
+            className={state.selectedNetwork === "BSC Testnet" ? "active" : ""}
           >
-            Polygon
+            Binance Smart Chain (BSC) Testnet
           </li>
-          
+          <li
+            onClick={() => handleNetworkSelect("Polygon")}
+            className={state.selectedNetwork === "Polygon" ? "active" : ""}
+          >
+            Polygon Mainnet
+          </li>
+          <li
+            onClick={() => handleNetworkSelect("Matic Mumbai")}
+            className={state.selectedNetwork === "Matic Mumbai" ? "active" : ""}
+          >
+            Polygon Mumbai Testnet
+          </li>
+          {/* Add more networks here */}
         </ul>
         <button className="cancel-button" onClick={onClose}>
           Cancel
