@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import "./ErrorNotification.scss"; // You can create a CSS file for styling
+import "./errorNotification.scss"; // You can create a CSS file for styling
 
 const ErrorNotification = ({ message, onClose }) => {
   // Use state to control the visibility of the error message
