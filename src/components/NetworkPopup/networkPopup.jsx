@@ -1,9 +1,16 @@
-import React from "react";
+import React, { useEffect } from "react";
 import "./networkPopup.scss";
 import { useMyContext } from "../../../myContext";
 
 const NetworkPopup = ({ onClose, onSelectNetwork }) => {
   const { state } = useMyContext();
+
+  useEffect(() => {
+    // Check if the address is connected, and if so, close the modal
+    if (state.isConnected) {
+      onClose();
+    }
+  }, [state.isConnected, onClose]);
 
   const handleNetworkSelect = (network) => {
     onSelectNetwork(network); // Callback to handle network selection in NavBar

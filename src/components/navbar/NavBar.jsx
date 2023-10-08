@@ -101,7 +101,29 @@ const NavBar = () => {
           >
             Home
           </NavLink>
+          <NavLink
+            to="/launchpad"
+            className={({ isActive }) => (isActive ? "active" : "link")}
+            onClick={closeMenu}
+          >
+            Lauchpad
+          </NavLink>
+          <NavLink
+            to="/airdrop"
+            className={({ isActive }) => (isActive ? "active" : "link")}
+            onClick={closeMenu}
+          >
+            Airdrop
+          </NavLink>
+          <NavLink
+            to="/claims"
+            className={({ isActive }) => (isActive ? "active" : "link")}
+            onClick={closeMenu}
+          >
+            Claims
+          </NavLink>
         </div>
+
 
         <div className="nav__btn">
           {isConnected ? (
