@@ -1,5 +1,5 @@
 import React from "react";
-import "./NetworkPopup.scss";
+import "./networkPopup.scss";
 import { useMyContext } from "../../../myContext";
 
 const NetworkPopup = ({ onClose, onSelectNetwork }) => {
