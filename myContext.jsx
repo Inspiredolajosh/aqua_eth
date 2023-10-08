@@ -146,13 +146,13 @@ export function MyProvider({ children }) {
       } else if (network === "Sepolia") {
         // Connect to Ethereum Sepolia Testnet
         if (window.ethereum) {
-          const sepoliaNetworkId = "0x31337"; // Sepolia Testnet Chain ID (Hardhat Network)
+          const sepoliaNetworkId = "11155111"; // Sepolia
           try {
             await window.ethereum.request({
               method: "wallet_addEthereumChain",
               params: [
                 {
-                  chainId: sepoliaNetworkId,
+                  chainId: `0x${sepoliaNetworkId.toString(16)}`,
                   chainName: "Ethereum Sepolia Testnet",
                   nativeCurrency: {
                     name: "ETH",
@@ -323,10 +323,10 @@ export function MyProvider({ children }) {
             const address = await signer.getAddress();
             console.log("Connected to Polygon Testnet with address:", address);
             // Perform any additional actions for Polygon Testnet here
-            setState((prevState) => ({
-              ...prevState,
-              isConnected: true,
-            }));
+             setState((prevState) => ({
+            ...prevState,
+            isConnected: true,
+          }));
           } catch (error) {
             console.error("Failed to connect to Polygon Testnet:", error);
           }

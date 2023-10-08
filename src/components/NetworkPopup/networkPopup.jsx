@@ -21,12 +21,12 @@ const NetworkPopup = ({ onClose, onSelectNetwork }) => {
           >
             Ethereum Mainnet
           </li>
-          <li
+          {/* <li
             onClick={() => handleNetworkSelect("Goerli")}
             className={state.selectedNetwork === "Goerli" ? "active" : ""}
           >
             Ethereum Goerli Testnet
-          </li>
+          </li> */}
           <li
             onClick={() => handleNetworkSelect("Sepolia")}
             className={state.selectedNetwork === "Sepolia" ? "active" : ""}
@@ -52,8 +52,8 @@ const NetworkPopup = ({ onClose, onSelectNetwork }) => {
             Polygon Mainnet
           </li>
           <li
-            onClick={() => handleNetworkSelect("Matic Mumbai")}
-            className={state.selectedNetwork === "Matic Mumbai" ? "active" : ""}
+            onClick={() => handleNetworkSelect("Polygon Testnet")}
+            className={state.selectedNetwork === "Polygon Testnet" ? "active" : ""}
           >
             Polygon Mumbai Testnet
           </li>
