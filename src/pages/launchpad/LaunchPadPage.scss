@@ -1,3 +1,4 @@
+// Define your breakpoints
 $bp-largest: 75em; // 1200px
 $bp-large: 68.75em; // 1100px
 $bp-medium: 56.25em; // 900px
@@ -8,7 +9,7 @@ $bp-smallest: 31.25em; // 500px
 .launchpad {
   display: flex;
   justify-content: center;
-  padding: 10rem 0;
+  padding: 5rem 0;
   position: relative;
   z-index: -100;
 
@@ -16,26 +17,51 @@ $bp-smallest: 31.25em; // 500px
     color: var(--color-white);
     padding: 3rem 5rem;
 
-    .row {
-      display: flex;
-      gap: 5rem;
+    h1 {
+      margin: 3rem 0;
+      text-align: center;
 
       @media only screen and (max-width: $bp-medium) {
-        gap: 2rem;
-        margin: 0 auto;
-        flex-wrap: wrap;
-      }
-
-      @media only screen and (max-width: $bp-phone) {
-        flex-direction: column;
+        margin-top: 2rem;
       }
     }
 
-    h1 {
-      margin: 3rem 0;
+    // Custom Dropdown Styles
+    .custom-dropdown {
+      margin-bottom: 2rem;
+      select {
+        padding: 10px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        background-color: #fff;
+        font-size: 16px;
+        width: 100%;
+        outline: none;
+        cursor: pointer;
 
-      @media only screen and (max-width: $bp-medium) {
-        text-align: center;
+        &:hover {
+          border-color: #555;
+        }
+      }
+    }
+
+    .card-row {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      margin-top: 2rem;
+
+      .card {
+        width: calc(33.33% - 10px);
+        margin-bottom: 20px;
+
+        @media only screen and (max-width: $bp-medium) {
+          width: calc(50% - 10px);
+        }
+
+        @media only screen and (max-width: $bp-small) {
+          width: 100%;
+        }
       }
     }
   }

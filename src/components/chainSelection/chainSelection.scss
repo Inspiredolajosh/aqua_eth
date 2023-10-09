@@ -1,0 +1,32 @@
+/* ChainSelection.css */
+.chain-selection {
+  margin-bottom: 20px;
+
+  button {
+    padding: 10px 20px;
+    margin-right: 10px;
+    border: none;
+    border-radius: 5px;
+    background-color: #3498db; /* Button background color */
+    color: #fff; /* Button text color */
+    font-size: 16px;
+    cursor: pointer;
+    transition: background-color 0.3s ease; /* Smooth background color transition */
+  }
+
+  button:hover {
+    background-color: #e74c3c; /* Button background color on hover */
+  }
+
+  .selected {
+    background-color: #e74c3c; /* Selected button background color */
+  }
+
+  @media (max-width: 768px) {
+    /* Responsive styles for screens up to 768px */
+    button {
+      padding: 8px 16px;
+      font-size: 14px;
+    }
+  }
+}

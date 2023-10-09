@@ -1,12 +1,11 @@
 import React from "react";
 import "./Card.scss";
-import logo from "../../assets/images/logo.png";
 
-const Card = () => {
+const Card = ({ project }) => {
   return (
     <div className="card">
       <div className="container">
-        {/* sale live */}
+        {/* Sale live */}
         <div className="sale-live">
           <span></span>
           <p>Sale Live</p>
@@ -14,32 +13,32 @@ const Card = () => {
 
         {/* Contribution */}
         <div className="contribution">
-          <img src={logo} alt="Logo" />
+          <img src={project.logo} alt="Logo" />
           <div className="contribution__text-box">
-            <h2>AquaEth</h2>
-            <p>MaxContribution: 3Eth</p>
+            <h2>{project.name}</h2>
+            <p>Max Contribution: {project.maxContribution}Eth</p>
           </div>
         </div>
 
-        {/* Progrss */}
+        {/* Progress */}
         <div className="token">
           <div className="token__col token__raise">
-            <p>Max raise</p>
-            <p>20Eth</p>
+            <p>Max Raise</p>
+            <p>{project.maxRaise}Eth</p>
           </div>
 
           <div className="token__col token__allocation">
             <p>Token Allocation</p>
-            <p>50, 000Eth</p>
+            <p>{project.tokenAllocation}Eth</p>
           </div>
 
           <div className="progress">
             <div className="token__col progress__text">
               <p>Progress</p>
-              <p>15%</p>
+              <p>{project.progress}%</p>
             </div>
             <div className="progress__bar">
-              <span></span>
+              <span style={{ width: `${project.progress}%` }}></span>
             </div>
           </div>
         </div>
@@ -48,17 +47,17 @@ const Card = () => {
         <div className="values">
           <div>
             <p>Max</p>
-            <p>3Eth</p>
+            <p>{project.maxContribution}Eth</p>
           </div>
 
           <div>
             <p>Contributions</p>
-            <p>1</p>
+            <p>{project.contributions}</p>
           </div>
 
           <div>
             <p>Min</p>
-            <p>0.02Eth</p>
+            <p>{project.minContribution}Eth</p>
           </div>
         </div>
       </div>
