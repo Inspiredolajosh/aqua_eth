@@ -1,0 +1,105 @@
+/* AdminPage.css */
+.admin-page {
+    background-color: rgb(24, 187, 60); /* Set the background color to black */
+    color: rgb(255, 255, 255); /* Set the text color to white */
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgb(0, 0, 0);
+    width: 400px; /* Adjust the width as needed */
+    margin: 0 auto; /* Center the component horizontally */
+    font-size: 18px; /* Increase font size */
+  }
+  
+  .admin-page h2 {
+    text-align: center;
+    margin-bottom: 20px;
+    font-size: 24px; /* Increase header font size */
+  }
+  
+  /* ProjectList.css */
+
+.project-list {
+    margin: 20px;
+    padding: 20px;
+    background-color: #f4f4f4;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+  }
+  
+  h2 {
+    font-size: 24px;
+    margin-bottom: 20px;
+  }
+  
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    background-color: #fff;
+  }
+  
+  table th,
+  table td {
+    padding: 10px;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+  }
+  
+  table th {
+    background-color: #333;
+    color: #fff;
+  }
+  
+  table tbody tr:hover {
+    background-color: #f2f2f2;
+  }
+  
+  button {
+    background-color: #e74c3c;
+    color: #fff;
+    border: none;
+    padding: 5px 10px;
+    border-radius: 3px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+  }
+  
+  button:hover {
+    background-color: #c0392b;
+  }
+  
+  .form-group {
+    margin-bottom: 15px;
+  }
+  
+  .form-group label {
+    display: block;
+    font-weight: bold;
+  }
+  
+  .form-group input,
+  .form-group select {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    background-color: #333; /* Input field background color */
+    color: white;
+  }
+  
+  .form-group select {
+    background-color: #333; /* Select field background color */
+  }
+  
+  button[type="submit"] {
+    background-color: #007bff;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+  
+  button[type="submit"]:hover {
+    background-color: #0056b3;
+  }
+  

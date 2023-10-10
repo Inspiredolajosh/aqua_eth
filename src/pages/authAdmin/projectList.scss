@@ -1,0 +1,61 @@
+/* ProjectList.css */
+
+.project-list {
+    margin: 20px;
+    padding: 20px;
+    background-color: #f4f4f4;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    overflow-x: auto; /* Add horizontal scrolling for smaller screens */
+  }
+  
+  h2 {
+    font-size: 28px;
+    margin-bottom: 20px;
+  }
+  
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    background-color: #fff;
+    white-space: nowrap; /* Prevent line breaks in table cells */
+  }
+  
+  table th,
+  table td {
+    padding: 12px;
+    font-size: 16px;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+  }
+  
+  table th {
+    background-color: #333;
+    color: #fff;
+  }
+  
+  table tbody tr:hover {
+    background-color: #f2f2f2;
+  }
+  
+  button {
+    background-color: #e74c3c;
+    color: #fff;
+    border: none;
+    padding: 8px 14px;
+    border-radius: 3px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+  }
+  
+  button:hover {
+    background-color: #c0392b;
+  }
+  
+  /* Media query for responsiveness */
+  @media (max-width: 768px) {
+    .project-list {
+      overflow-x: scroll; /* Enable horizontal scrolling on small screens */
+    }
+  }
+  

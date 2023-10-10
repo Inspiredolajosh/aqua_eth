@@ -71,13 +71,23 @@ const LaunchPadPage = () => {
 
   const chains = [...new Set(projects.map((project) => project.chain))];
 
-  const filteredProjects = projects.filter(
-    (project) => selectedChain === "All" || project.chain === selectedChain
+  const mainnetProjects = projects.filter(
+    (project) => project.chain === "Ethereum" || project.chain === "Binance Smart Chain"
   );
+  const testnetProjects = projects.filter(
+    (project) => project.chain === "Polygon"
+  );
+
+  const filteredProjects =
+    selectedChain === "All"
+      ? projects
+      : selectedChain === "Mainnet"
+      ? mainnetProjects
+      : testnetProjects;
 
   const handleOpenCardPopup = (project) => {
     setSelectedProject(project);
-    toggleCardPopup();
+    setIsCardPopupOpen(true); // Open the card popup
   };
 
   const handleBuyClick = () => {
@@ -86,7 +96,7 @@ const LaunchPadPage = () => {
     setTimeout(() => {
       setIsBuying(false);
       alert(`You have successfully bought ${selectedProject.name} tokens.`);
-      toggleCardPopup(); // Close the CardPopup after buying
+      setIsCardPopupOpen(false); // Close the card popup after buying
     }, 2000);
   };
 
@@ -97,15 +107,12 @@ const LaunchPadPage = () => {
 
         <div className="custom-dropdown">
           <select
-            value={selectedChain}
+                  value={projects.chain}
             onChange={(e) => setSelectedChain(e.target.value)}
           >
-            <option value="All">All</option>
-            {chains.map((chain) => (
-              <option key={chain} value={chain}>
-                {chain}
-              </option>
-            ))}
+            <option value="All">All Chains</option>
+            <option value="Mainnet">Mainnet</option>
+            <option value="Testnet">Testnet</option>
           </select>
         </div>
 
@@ -122,7 +129,7 @@ const LaunchPadPage = () => {
 
       {isCardPopupOpen && (
         <CardPopup
-          onClose={toggleCardPopup}
+          onClose={() => setIsCardPopupOpen(false)}
           onBuy={handleBuyClick}
           isBuying={isBuying}
         />
