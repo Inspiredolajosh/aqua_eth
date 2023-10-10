@@ -1,11 +1,18 @@
 import React from "react";
 import "./Card.scss";
+import { useMyContext } from "../../../myContext";
 
 const Card = ({ project }) => {
+  const { isCardPopupOpen, toggleCardPopup } = useMyContext();
+
+  const openPopup = () => {
+    toggleCardPopup();
+  };
+
   return (
     <div className="card">
       <div className="container">
-        {/* Sale live */}
+        {/* sale live */}
         <div className="sale-live">
           <span></span>
           <p>Sale Live</p>
@@ -16,20 +23,20 @@ const Card = ({ project }) => {
           <img src={project.logo} alt="Logo" />
           <div className="contribution__text-box">
             <h2>{project.name}</h2>
-            <p>Max Contribution: {project.maxContribution}Eth</p>
+            <p>Max Contribution: {project.maxContribution} Eth</p>
           </div>
         </div>
 
         {/* Progress */}
         <div className="token">
           <div className="token__col token__raise">
-            <p>Max Raise</p>
-            <p>{project.maxRaise}Eth</p>
+            <p>Max raise</p>
+            <p>{project.maxRaise} Eth</p>
           </div>
 
           <div className="token__col token__allocation">
             <p>Token Allocation</p>
-            <p>{project.tokenAllocation}Eth</p>
+            <p>{project.tokenAllocation} Eth</p>
           </div>
 
           <div className="progress">
@@ -38,7 +45,7 @@ const Card = ({ project }) => {
               <p>{project.progress}%</p>
             </div>
             <div className="progress__bar">
-              <span style={{ width: `${project.progress}%` }}></span>
+              <span></span>
             </div>
           </div>
         </div>
@@ -47,7 +54,7 @@ const Card = ({ project }) => {
         <div className="values">
           <div>
             <p>Max</p>
-            <p>{project.maxContribution}Eth</p>
+            <p>{project.maxContribution} Eth</p>
           </div>
 
           <div>
@@ -57,9 +64,14 @@ const Card = ({ project }) => {
 
           <div>
             <p>Min</p>
-            <p>{project.minContribution}Eth</p>
+            <p>{project.minContribution} Eth</p>
           </div>
         </div>
+
+        {/* Buy Button */}
+        <button className="buy-button" onClick={openPopup}>
+          {isCardPopupOpen ? "Buying..." : "Buy"}
+        </button>
       </div>
     </div>
   );

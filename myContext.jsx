@@ -1,3 +1,4 @@
+// MyProvider.js
 import React, { createContext, useContext, useState, useEffect } from "react";
 import { ethers } from "ethers";
 
@@ -10,8 +11,11 @@ export function MyProvider({ children }) {
     networkChainId: null,
     isModalOpen: false,
     isNetworkPopupOpen: false,
-    selectedNetwork: null, // Add selectedNetwork to the state
+    selectedNetwork: null,
   });
+
+  // State for CardPopup
+  const [isCardPopupOpen, setIsCardPopupOpen] = useState(false);
 
   useEffect(() => {
     // Check if the Ethereum provider is available in the window object
@@ -121,7 +125,9 @@ export function MyProvider({ children }) {
                     symbol: "eth",
                     decimals: 18,
                   },
-                  rpcUrls: ["https://goerli.infura.io/v3/85341e557d664d38aa3fbb1ef6d9d7db"],
+                  rpcUrls: [
+                    "https://goerli.infura.io/v3/85341e557d664d38aa3fbb1ef6d9d7db",
+                  ],
                   blockExplorerUrls: ["https://goerli.etherscan.io/"],
                 },
               ],
@@ -159,7 +165,9 @@ export function MyProvider({ children }) {
                     symbol: "eth",
                     decimals: 18,
                   },
-                  rpcUrls: ["https://sepolia.infura.io/v3/85341e557d664d38aa3fbb1ef6d9d7db"], // Update with your Sepolia Testnet RPC URL
+                  rpcUrls: [
+                    "https://sepolia.infura.io/v3/85341e557d664d38aa3fbb1ef6d9d7db",
+                  ], // Update with your Sepolia Testnet RPC URL
                   blockExplorerUrls: ["https://sepolia.etherscan.io/"], // Update with your block explorer URL
                 },
               ],
@@ -207,7 +215,7 @@ export function MyProvider({ children }) {
             const provider = new ethers.providers.Web3Provider(window.ethereum);
             const signer = provider.getSigner();
             const address = await signer.getAddress();
-            console.log("Connected to BSC Mainnet with address:", address);
+            console.log("Connected to Binance Smart Chain Mainnet with address:", address);
             // Perform any additional actions for BSC Mainnet here
             setState((prevState) => ({
               ...prevState,
@@ -219,129 +227,16 @@ export function MyProvider({ children }) {
         } else {
           console.error("Ethereum provider not available.");
         }
-      } else if (network === "BSC Testnet") {
-        // Connect to Binance Smart Chain (BSC) Testnet
-        if (window.ethereum) {
-          const bscTestnetNetworkId = "0x61"; // BSC Testnet Chain ID
-          try {
-            await window.ethereum.request({
-              method: "wallet_addEthereumChain",
-              params: [
-                {
-                  chainId: bscTestnetNetworkId,
-                  chainName: "Binance Smart Chain Testnet",
-                  nativeCurrency: {
-                    name: "BNB",
-                    symbol: "bnb",
-                    decimals: 18,
-                  },
-                  rpcUrls: ["https://data-seed-prebsc-1-s1.binance.org:8545/"],
-                  blockExplorerUrls: ["https://testnet.bscscan.com/"],
-                },
-              ],
-            });
-            await window.ethereum.request({ method: "eth_requestAccounts" });
-            // You can now interact with BSC Testnet
-            const provider = new ethers.providers.Web3Provider(window.ethereum);
-            const signer = provider.getSigner();
-            const address = await signer.getAddress();
-            console.log("Connected to BSC Testnet with address:", address);
-            // Perform any additional actions for BSC Testnet here
-            setState((prevState) => ({
-              ...prevState,
-              isConnected: true,
-            }));
-          } catch (error) {
-            console.error("Failed to connect to BSC Testnet:", error);
-          }
-        } else {
-          console.error("Ethereum provider not available.");
-        }
-      } else if (network === "Polygon") {
-        // Connect to Polygon Mainnet
-        if (window.ethereum) {
-          const polygonNetworkId = "0x89"; // Polygon Mainnet Chain ID
-          try {
-            await window.ethereum.request({
-              method: "wallet_addEthereumChain",
-              params: [
-                {
-                  chainId: polygonNetworkId,
-                  chainName: "Polygon Mainnet",
-                  nativeCurrency: {
-                    name: "MATIC",
-                    symbol: "matic",
-                    decimals: 18,
-                  },
-                  rpcUrls: ["https://polygon-rpc.com/"],
-                  blockExplorerUrls: ["https://explorer.polygon.network/"],
-                },
-              ],
-            });
-            await window.ethereum.request({ method: "eth_requestAccounts" });
-            // You can now interact with Polygon Mainnet
-            const provider = new ethers.providers.Web3Provider(window.ethereum);
-            const signer = provider.getSigner();
-            const address = await signer.getAddress();
-            console.log("Connected to Polygon Mainnet with address:", address);
-            // Perform any additional actions for Polygon Mainnet here
-            setState((prevState) => ({
-              ...prevState,
-              isConnected: true,
-            }));
-          } catch (error) {
-            console.error("Failed to connect to Polygon Mainnet:", error);
-          }
-        } else {
-          console.error("Ethereum provider not available.");
-        }
-      } else if (network === "Polygon Testnet") {
-        // Connect to Polygon Testnet
-        if (window.ethereum) {
-          const polygonTestnetNetworkId = "0x13881"; // Polygon Testnet Chain ID
-          try {
-            await window.ethereum.request({
-              method: "wallet_addEthereumChain",
-              params: [
-                {
-                  chainId: polygonTestnetNetworkId,
-                  chainName: "Polygon Testnet",
-                  nativeCurrency: {
-                    name: "MATIC",
-                    symbol: "matic",
-                    decimals: 18,
-                  },
-                  rpcUrls: ["https://rpc-mumbai.matic.today"],
-                  blockExplorerUrls: ["https://mumbai-explorer.matic.today/"],
-                },
-              ],
-            });
-            await window.ethereum.request({ method: "eth_requestAccounts" });
-            // You can now interact with Polygon Testnet
-            const provider = new ethers.providers.Web3Provider(window.ethereum);
-            const signer = provider.getSigner();
-            const address = await signer.getAddress();
-            console.log("Connected to Polygon Testnet with address:", address);
-            // Perform any additional actions for Polygon Testnet here
-             setState((prevState) => ({
-            ...prevState,
-            isConnected: true,
-          }));
-          } catch (error) {
-            console.error("Failed to connect to Polygon Testnet:", error);
-          }
-        } else {
-          console.error("Ethereum provider not available.");
-        }
-      } else {
-        console.error("Unsupported network:", network);
       }
     } catch (error) {
-      console.error("Failed to connect wallet:", error);
+      console.error("Error connecting wallet:", error);
     }
   };
-  
-  
+
+  // Function to toggle CardPopup state
+  const toggleCardPopup = () => {
+    setIsCardPopupOpen((prevState) => !prevState);
+  };
 
   return (
     <MyContext.Provider
@@ -351,7 +246,10 @@ export function MyProvider({ children }) {
         toggleNetworkPopup,
         disconnectWallet,
         switchNetwork,
-        connectWallet, // Include connectWallet in the context value
+        connectWallet,
+        // Include isCardPopupOpen and toggleCardPopup in the context value
+        isCardPopupOpen,
+        toggleCardPopup,
       }}
     >
       {children}

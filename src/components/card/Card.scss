@@ -13,6 +13,27 @@ $bp-smallest: 31.25em; // 500px
     font-size: 1.6rem;
     color: var(--color-white);
 
+    .buy-button {
+      background-color: #2f9949;
+      color: #fff;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 5px;
+      font-size: 1.5rem;
+      cursor: pointer;
+      margin-top: 20px;
+      transition: background-color 0.2s ease; /* Add a smooth hover effect */
+      margin: 0 auto; /* Center horizontally using margin */
+      margin: 20px auto 0;
+  display: block; /* Make it a block-level element to center horizontally */
+
+    
+      &:hover {
+        background-color: #4ac013; /* Change the background color on hover */
+      }
+    }
+    
+
     .sale-live {
       display: flex;
       align-items: center;

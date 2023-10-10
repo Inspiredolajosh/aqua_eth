@@ -1,9 +1,14 @@
 import React, { useState } from "react";
 import "./LaunchPadPage.scss";
 import Card from "../../components/card/Card";
+import CardPopup from "../../components/cardPopup/cardPopup";
+import { useMyContext } from "../../../myContext";
 
 const LaunchPadPage = () => {
-  const [selectedChain, setSelectedChain] = useState("All"); // Initial selection is "All"
+  const [selectedChain, setSelectedChain] = useState("All");
+  const [isBuying, setIsBuying] = useState(false);
+
+  const { isCardPopupOpen, toggleCardPopup, setSelectedProject } = useMyContext();
 
   const projects = [
     {
@@ -66,17 +71,30 @@ const LaunchPadPage = () => {
 
   const chains = [...new Set(projects.map((project) => project.chain))];
 
-  // Function to filter projects based on the selected chain
   const filteredProjects = projects.filter(
     (project) => selectedChain === "All" || project.chain === selectedChain
   );
+
+  const handleOpenCardPopup = (project) => {
+    setSelectedProject(project);
+    toggleCardPopup();
+  };
+
+  const handleBuyClick = () => {
+    setIsBuying(true);
+
+    setTimeout(() => {
+      setIsBuying(false);
+      alert(`You have successfully bought ${selectedProject.name} tokens.`);
+      toggleCardPopup(); // Close the CardPopup after buying
+    }, 2000);
+  };
 
   return (
     <div className="launchpad">
       <div className="container">
         <h1>IDO Projects</h1>
 
-        {/* Custom Dropdown */}
         <div className="custom-dropdown">
           <select
             value={selectedChain}
@@ -92,12 +110,23 @@ const LaunchPadPage = () => {
         </div>
 
         <div className="card-row">
-          {/* Render Card components for filtered projects */}
           {filteredProjects.map((project, index) => (
-            <Card key={index} project={project} />
+            <Card
+              key={index}
+              project={project}
+              onOpenPopup={() => handleOpenCardPopup(project)}
+            />
           ))}
         </div>
       </div>
+
+      {isCardPopupOpen && (
+        <CardPopup
+          onClose={toggleCardPopup}
+          onBuy={handleBuyClick}
+          isBuying={isBuying}
+        />
+      )}
     </div>
   );
 };
