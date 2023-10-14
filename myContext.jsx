@@ -1,4 +1,5 @@
 // MyProvider.js
+
 import React, { createContext, useContext, useState, useEffect } from "react";
 import { ethers } from "ethers";
 
@@ -14,45 +15,34 @@ export function MyProvider({ children }) {
     selectedNetwork: null,
   });
 
-  // State for CardPopup
   const [isCardPopupOpen, setIsCardPopupOpen] = useState(false);
 
   useEffect(() => {
-    // Check if the Ethereum provider is available in the window object
     if (window.ethereum) {
       const provider = new ethers.providers.Web3Provider(window.ethereum);
 
-      // Listen for account changes
       window.ethereum.on("accountsChanged", (accounts) => {
         if (accounts.length === 0) {
-          // User disconnected their wallet
           setState((prevState) => ({
             ...prevState,
             isConnected: false,
             defaultAccount: null,
           }));
         } else {
-          // User connected or switched accounts
           const signer = provider.getSigner();
-          signer
-            .getAddress()
-            .then((address) => {
-              // Update the state with the connected wallet's address
-              setState((prevState) => ({
-                ...prevState,
-                isConnected: true,
-                defaultAccount: address,
-              }));
-            })
-            .catch((error) => {
-              console.error("Failed to get address:", error);
-            });
+          signer.getAddress().then((address) => {
+            setState((prevState) => ({
+              ...prevState,
+              isConnected: true,
+              defaultAccount: address,
+            }));
+          }).catch((error) => {
+            console.error("Failed to get address:", error);
+          });
         }
       });
 
-      // Listen for network changes
       window.ethereum.on("chainChanged", (chainId) => {
-        // Update the state with the new network chain ID
         setState((prevState) => ({
           ...prevState,
           networkChainId: chainId,
@@ -83,157 +73,119 @@ export function MyProvider({ children }) {
     }));
   };
 
-  const switchNetwork = (network) => {
-    setState((prevState) => ({
-      ...prevState,
-      networkChainId: network,
-    }));
-  };
-
-  const connectWallet = async (network) => {
+  const switchNetwork = async (network) => {
     try {
       if (network === "Ethereum") {
-        // Connect to Ethereum Mainnet
+        // Example switch logic for Ethereum network
+        await window.ethereum.request({
+          method: "wallet_switchEthereumChain",
+          params: [{ chainId: "0x1" }], // Replace with the desired chainId
+        });
+        return true;
+      } else if (network === "Sepolia") {
+        // Example switch logic for Sepolia network
+        await window.ethereum.request({
+          method: "wallet_addEthereumChain",
+          params: [
+            {
+              chainId: "0xAA36A7", // Replace with the desired chainId
+              chainName: "Sepolia", // Replace with the desired chain name
+              nativeCurrency: {
+                name: "Sepolia ",
+                symbol: "SET",
+                decimals: 18,
+              },
+              rpcUrls: ["https://rpc.sepolia.org"], // Replace with the actual RPC URL
+              blockExplorerUrls: ["https://sepolia.etherscan.io/"], // Replace with the actual block explorer URL
+            },
+          ],
+        });
+        return true;
+
+      } else if (network === "BSC Testnet") {
+        // Example switch logic for BSC Testnet
+        await window.ethereum.request({
+          method: "wallet_addEthereumChain",
+          params: [
+            {
+              chainId: "0x61",
+              chainName: "Binance Smart Chain Testnet",
+              nativeCurrency: {
+                name: "BNB",
+                symbol: "bnb",
+                decimals: 18,
+              },
+              rpcUrls: ["https://data-seed-prebsc-1-s1.binance.org:8545/"],
+              blockExplorerUrls: ["https://testnet.bscscan.com"],
+            },
+          ],
+        });
+        return true;
+      } else if (network === "Polygon") {
+        // Example switch logic for Polygon network
+        await window.ethereum.request({
+          method: "wallet_switchEthereumChain",
+          params: [{ chainId: "0x89" }], // Replace with the Polygon Mainnet chainId
+        });
+        return true;
+      } else if (network === "Polygon Testnet") {
+        // Example switch logic for Polygon Testnet
+        await window.ethereum.request({
+          method: "wallet_addEthereumChain",
+          params: [
+            {
+              chainId: "0x13881",
+              chainName: "Polygon Mumbai Testnet",
+              nativeCurrency: {
+                name: "MATIC",
+                symbol: "matic",
+                decimals: 18,
+              },
+              rpcUrls: ["https://rpc-mumbai.matic.today"],
+              blockExplorerUrls: ["https://mumbai.polygonscan.com"],
+            },
+          ],
+        });
+        return true;
+      } else {
+        console.error("Invalid network specified for switching");
+        return false;
+      }
+    } catch (error) {
+      console.error("Failed to switch network:", error);
+      return false;
+    }
+  };
+  
+  const connectWallet = async (network) => {
+    try {
+      if (network === "Ethereum" || network === "Sepolia" || network === "BSC") {
         if (window.ethereum) {
           await window.ethereum.request({ method: "eth_requestAccounts" });
-          // You can now use ethers.js for Ethereum interactions
           const provider = new ethers.providers.Web3Provider(window.ethereum);
           const signer = provider.getSigner();
           const address = await signer.getAddress();
-          console.log("Connected to Ethereum Mainnet with address:", address);
-          // Perform any additional actions for Ethereum Mainnet here
-          setState((prevState) => ({
-            ...prevState,
-            isConnected: true,
-          }));
+          console.log(`Connected to ${network} with address:`, address);
+          
+        // Save the connected account and network to local storage
+        localStorage.setItem('connectedAccount', address);
+        localStorage.setItem('selectedNetwork', network);
+        
+          return true;
         } else {
           console.error("Ethereum provider not available.");
+          return false;
         }
-      } else if (network === "Goerli") {
-        // Connect to Ethereum Goerli Testnet
-        if (window.ethereum) {
-          const goerliNetworkId = "0x5"; // Goerli Testnet Chain ID
-          try {
-            await window.ethereum.request({
-              method: "wallet_addEthereumChain",
-              params: [
-                {
-                  chainId: goerliNetworkId,
-                  chainName: "Ethereum Goerli Testnet",
-                  nativeCurrency: {
-                    name: "ETH",
-                    symbol: "eth",
-                    decimals: 18,
-                  },
-                  rpcUrls: [
-                    "https://goerli.infura.io/v3/85341e557d664d38aa3fbb1ef6d9d7db",
-                  ],
-                  blockExplorerUrls: ["https://goerli.etherscan.io/"],
-                },
-              ],
-            });
-            await window.ethereum.request({ method: "eth_requestAccounts" });
-            // You can now interact with Goerli Testnet
-            const provider = new ethers.providers.Web3Provider(window.ethereum);
-            const signer = provider.getSigner();
-            const address = await signer.getAddress();
-            console.log("Connected to Ethereum Goerli Testnet with address:", address);
-            // Perform any additional actions for Goerli Testnet here
-            setState((prevState) => ({
-              ...prevState,
-              isConnected: true,
-            }));
-          } catch (error) {
-            console.error("Failed to connect to Goerli Testnet:", error);
-          }
-        } else {
-          console.error("Ethereum provider not available.");
-        }
-      } else if (network === "Sepolia") {
-        // Connect to Ethereum Sepolia Testnet
-        if (window.ethereum) {
-          const sepoliaNetworkId = "11155111"; // Sepolia
-          try {
-            await window.ethereum.request({
-              method: "wallet_addEthereumChain",
-              params: [
-                {
-                  chainId: `0x${sepoliaNetworkId.toString(16)}`,
-                  chainName: "Ethereum Sepolia Testnet",
-                  nativeCurrency: {
-                    name: "ETH",
-                    symbol: "eth",
-                    decimals: 18,
-                  },
-                  rpcUrls: [
-                    "https://sepolia.infura.io/v3/85341e557d664d38aa3fbb1ef6d9d7db",
-                  ], // Update with your Sepolia Testnet RPC URL
-                  blockExplorerUrls: ["https://sepolia.etherscan.io/"], // Update with your block explorer URL
-                },
-              ],
-            });
-            await window.ethereum.request({ method: "eth_requestAccounts" });
-            // You can now interact with Sepolia Testnet
-            const provider = new ethers.providers.Web3Provider(window.ethereum);
-            const signer = provider.getSigner();
-            const address = await signer.getAddress();
-            console.log("Connected to Ethereum Sepolia Testnet with address:", address);
-            // Perform any additional actions for Sepolia Testnet here
-            setState((prevState) => ({
-              ...prevState,
-              isConnected: true,
-            }));
-          } catch (error) {
-            console.error("Failed to connect to Sepolia Testnet:", error);
-          }
-        } else {
-          console.error("Ethereum provider not available.");
-        }
-      } else if (network === "BSC") {
-        // Connect to Binance Smart Chain (BSC) Mainnet
-        if (window.ethereum) {
-          const bscNetworkId = "0x38"; // BSC Mainnet Chain ID
-          try {
-            await window.ethereum.request({
-              method: "wallet_addEthereumChain",
-              params: [
-                {
-                  chainId: bscNetworkId,
-                  chainName: "Binance Smart Chain Mainnet",
-                  nativeCurrency: {
-                    name: "BNB",
-                    symbol: "bnb",
-                    decimals: 18,
-                  },
-                  rpcUrls: ["https://bsc-dataseed.binance.org/"],
-                  blockExplorerUrls: ["https://bscscan.com/"],
-                },
-              ],
-            });
-            await window.ethereum.request({ method: "eth_requestAccounts" });
-            // You can now interact with BSC Mainnet
-            const provider = new ethers.providers.Web3Provider(window.ethereum);
-            const signer = provider.getSigner();
-            const address = await signer.getAddress();
-            console.log("Connected to Binance Smart Chain Mainnet with address:", address);
-            // Perform any additional actions for BSC Mainnet here
-            setState((prevState) => ({
-              ...prevState,
-              isConnected: true,
-            }));
-          } catch (error) {
-            console.error("Failed to connect to BSC Mainnet:", error);
-          }
-        } else {
-          console.error("Ethereum provider not available.");
-        }
+      } else {
+        console.error("Invalid network specified for wallet connection");
+        return false;
       }
     } catch (error) {
       console.error("Error connecting wallet:", error);
+      return false;
     }
   };
 
-  // Function to toggle CardPopup state
   const toggleCardPopup = () => {
     setIsCardPopupOpen((prevState) => !prevState);
   };
@@ -247,7 +199,6 @@ export function MyProvider({ children }) {
         disconnectWallet,
         switchNetwork,
         connectWallet,
-        // Include isCardPopupOpen and toggleCardPopup in the context value
         isCardPopupOpen,
         toggleCardPopup,
       }}
