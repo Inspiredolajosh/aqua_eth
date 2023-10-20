@@ -1,7 +1,7 @@
 // SepoliaCard.js
 
 import React, { useState, useEffect } from "react";
-import Modal from "./Modal"; // Assuming the Modal component is in the same directory
+ // Assuming the Modal component is in the same directory
 import "./scss/sepoliaCard.scss";
 import logo from "../../../assets/images/logo.png";
 import { ethers } from "ethers";
