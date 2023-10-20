@@ -1,80 +1,192 @@
-import React, { useEffect, useState } from "react";
-import "./Modal.scss";
-import trust from "../../assets/images/vertical_blue.png";
-import meta from "../../assets/images/MetaMask_Fox.svg.png";
-import { useMyContext } from "../../../myContext";
+import React, { useState, useEffect } from 'react';
+import { useStore } from '../../store';
+import './Modal.scss';
+import { ethers } from 'ethers';
 
 const Modal = ({ isOpen, onClose }) => {
-  const { disconnectWallet, switchNetwork, isConnected, selectedNetwork } = useMyContext();
+  const { selectChain, saveAddress, setConnected  } = useStore();
+  const [successMessage, setSuccessMessage] = useState("");
+  const [errorMessage, setErrorMessage] = useState("");
+  
 
-  const connectWallet = async (walletType) => {
-    try {
-      if (window.ethereum) {
-        const accounts = await window.ethereum.request({ method: "eth_requestAccounts" });
-        const selectedAddress = accounts[0];
+  const {
+    selectedChain,
+    connected,
+  } = useStore();
 
-        if (selectedAddress) {
-          switchNetwork(walletType);
-          onClose();
-        }
-      } else {
-        window.alert("Please install a compatible Ethereum wallet provider to connect.");
-      }
-    } catch (error) {
-      console.error(error);
-      window.alert(`Failed to connect to ${walletType}.`);
-    }
-  };
-
-  const handleDisconnectWallet = () => {
-    disconnectWallet();
-    onClose();
-  };
-
-  useEffect(() => {
-    if (isConnected) {
+  const handleChainSelection = async (chain) => {
+    const result = await switchNetwork(chain);
+    if (result) {
+      selectChain(chain);
+      saveAddress(''); // Clear saved address on chain selection
+      connectWalletToNetwork(chain);
+      setConnected(true); // Set the connected state to true
       onClose();
     }
-  }, [isConnected, onClose]);
+  };
+  
+
+  const handleAddressChange = (e) => {
+    setAddress(e.target.value);
+  };
+
+  const handleSave = () => {
+    saveAddress(address);
+    onClose();
+  };
+  const switchNetwork = async (network) => {
+    try {
+      if (network === "Ethereum") {
+        // Example switch logic for Ethereum network
+        await window.ethereum.request({
+          method: "wallet_switchEthereumChain",
+          params: [{ chainId: "0x1" }], // Replace with the desired chainId
+        });
+        return true;
+      } else if (network === "Sepolia") {
+        // Example switch logic for Sepolia network
+        await window.ethereum.request({
+          method: "wallet_addEthereumChain",
+          params: [
+            {
+              chainId: "0xAA36A7", // Replace with the desired chainId
+              chainName: "Sepolia", // Replace with the desired chain name
+              nativeCurrency: {
+                name: "Sepolia ",
+                symbol: "SET",
+                decimals: 18,
+              },
+              rpcUrls: ["https://rpc.sepolia.org"], // Replace with the actual RPC URL
+              blockExplorerUrls: ["https://sepolia.etherscan.io/"], // Replace with the actual block explorer URL
+            },
+          ],
+        });
+        selectChain(network);
+        return true;
+        
+        
+      } else if (network === "BSC Testnet") {
+        // Example switch logic for BSC Testnet
+        await window.ethereum.request({
+          method: "wallet_addEthereumChain",
+          params: [
+            {
+              chainId: "0x61",
+              chainName: "Binance Smart Chain Testnet",
+              nativeCurrency: {
+                name: "BNB",
+                symbol: "bnb",
+                decimals: 18,
+              },
+              rpcUrls: ["https://data-seed-prebsc-1-s1.binance.org:8545/"],
+              blockExplorerUrls: ["https://testnet.bscscan.com"],
+            },
+          ],
+        });
+       
+        selectChain(network);
+        return true;
+      } else if (network === "Polygon") {
+        // Example switch logic for Polygon network
+        await window.ethereum.request({
+          method: "wallet_switchEthereumChain",
+          params: [{ chainId: "0x89" }], // Replace with the Polygon Mainnet chainId
+        });
+        selectChain(network);
+        return true;
+      } else if (network === "Polygon Testnet") {
+        // Example switch logic for Polygon Testnet
+        await window.ethereum.request({
+          method: "wallet_addEthereumChain",
+          params: [
+            {
+              chainId: "0x13881",
+              chainName: "Polygon Mumbai Testnet",
+              nativeCurrency: {
+                name: "MATIC",
+                symbol: "matic",
+                decimals: 18,
+              },
+              rpcUrls: ["https://rpc-mumbai.matic.today"],
+              blockExplorerUrls: ["https://mumbai.polygonscan.com"],
+            },
+          ],
+        });
+        selectChain(network);
+        return true;
+      } else {
+        console.error("Invalid network specified for switching");
+        return false;
+      }
+    } catch (error) {
+      console.error("Failed to switch network:", error);
+      return false;
+    }
+  };
+
+  const connectWalletToNetwork = async (network) => {
+    try {
+      if (network === "Ethereum" || network === "Sepolia" || network === "BSC") {
+        if (window.ethereum) {
+          await window.ethereum.request({ method: "eth_requestAccounts" });
+          const provider = new ethers.providers.Web3Provider(window.ethereum);
+          const signer = provider.getSigner();
+          const address = await signer.getAddress();
+          console.log(`Connected to ${network} with address:`, address);
+  
+          // Save the connected account and network to local storage
+          localStorage.setItem("connectedAccount", address);
+          localStorage.setItem("selectedNetwork", network);
+  
+          setConnected(true);
+          selectChain(network);
+          saveAddress(address);
+  
+          return true;
+        } else {
+          console.error("Ethereum provider not available.");
+          setErrorMessage("Oops... try again"); // Set the error message if the provider is not available
+          return false;
+        }
+      } else {
+        console.error("Invalid network specified for wallet connection");
+        setErrorMessage("Oops... try again"); // Set the error message for an invalid network
+        return false;
+      }
+    } catch (error) {
+      console.error("Error connecting wallet:", error);
+      setErrorMessage("Oops... try again"); // Set the error message for any connection errors
+      return false;
+    }
+  };
+  
 
   if (!isOpen) return null;
 
   return (
-    <div className={`modal ${isOpen ? "open" : ""}`}>
+    <div className="modal">
       <div className="modal-content">
-        <h2 className="text-primary">Connect Wallet</h2>
-        {!isConnected ? (
-          <div>
-            <button
-              className="connect-wallets connect-wallets--trust"
-              onClick={() => connectWallet("Trust Wallet")}
-            >
-              <img src={trust} alt="trust" />
-              <h2>Trust Wallet</h2>
-            </button>
-
-            <button
-              className="connect-wallets connect-wallets--meta"
-              onClick={() => connectWallet("MetaMask")}
-            >
-              <img src={meta} alt="meta" />
-              <h2>MetaMask</h2>
-            </button>
-          </div>
-        ) : (
-          <div>
-            <p>Connected with {selectedAddress}</p>
-            <button className="disconnect-btn" onClick={handleDisconnectWallet}>
-              Disconnect Wallet
-            </button>
-          </div>
-        )}
-        <button className="close-btn" onClick={onClose}>
-          Close
-        </button>
+        <span className="close" onClick={onClose}>
+          &times;
+        </span>
+        <h2>Select Chain</h2>
+        <div className="chain-buttons">
+          <button onClick={() => handleChainSelection('Ethereum')}>Ethereum</button>
+          <button onClick={() => handleChainSelection('Sepolia')}>Sepolia</button>
+          <button onClick={() => handleChainSelection('BSC Mainnet')}>BSC Mainnet</button>
+          <button onClick={() => handleChainSelection('BSC Testnet')}>BSC Testnet</button>
+          <button onClick={() => handleChainSelection('Polygon Mainnet')}>Polygon Mainnet</button>
+          <button onClick={() => handleChainSelection('Polygon Mumbai')}>Polygon Mumbai</button>
+        </div>
       </div>
+
+    
     </div>
   );
 };
 
 export default Modal;
+
+
+
+

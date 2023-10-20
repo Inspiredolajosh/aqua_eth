@@ -1,16 +1,12 @@
 import React from "react";
-import ReactDOM from "react-dom";
+import ReactDOM from "react-dom/client";
 import "./index.scss";
-import router from "./routes";
-import { RouterProvider } from "react-router";
-import { MyProvider } from "../myContext";
-import { createRoot } from "react-dom/client";
 
-// Wrap your entire application with createRoot and MyProvider
-createRoot(document.getElementById("root")).render(
+import router from "./routes";
+import { RouterProvider } from "react-router-dom";
+
+ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>
-    <MyProvider>
-      <RouterProvider router={router} />
-    </MyProvider>
+    <RouterProvider router={router} />
   </React.StrictMode>
 );

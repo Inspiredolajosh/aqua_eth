@@ -11,6 +11,24 @@ $bp-smallest: 31.25em;
   width: 100%;
   top: 0;
 
+  .success-message,
+  .error-message {
+    position: fixed;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: #4caf50;
+    color: #fff;
+    padding: 10px 20px;
+    border-radius: 5px;
+    margin-top: 20px;
+    z-index: 999;
+  }
+
+  .error-message {
+    background-color: #f44336;
+  }
+
   .container {
     height: 5rem;
     display: flex;

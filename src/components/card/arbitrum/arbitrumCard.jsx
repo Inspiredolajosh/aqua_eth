@@ -1,8 +1,12 @@
 import React from "react";
-import "./Card.scss";
-import logo from "../../assets/images/logo.png";
+import "./scss/arbitrumCard.scss";
+import logo from "../../../assets/images/logo.png";
 
-const Card = () => {
+const ArbitrumCard = () => {
+  const handleBuyNowClick = () => {
+    // Add your logic for handling the buy button click here
+  };
+
   return (
     <div className="card">
       <div className="container">
@@ -61,9 +65,14 @@ const Card = () => {
             <p>0.02Eth</p>
           </div>
         </div>
+
+        {/* Buy button */}
+        <button className="buy-button" onClick={handleBuyNowClick}>
+          Buy Now
+        </button>
       </div>
     </div>
   );
 };
 
-export default Card;
+export default ArbitrumCard;

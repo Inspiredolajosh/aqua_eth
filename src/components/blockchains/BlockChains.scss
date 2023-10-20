@@ -40,6 +40,10 @@ $bp-smallest: 31.25em; // 500px
       gap: 2rem;
       margin-top: 2rem;
 
+      img{
+        width: 5rem;
+      }
+
       @media only screen and (max-width: $bp-phone) {
         width: fit-content;
         flex-wrap: wrap;

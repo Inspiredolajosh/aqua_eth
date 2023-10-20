@@ -88,6 +88,14 @@ $bp-smallest: 31.25em; // 500px
       }
     }
 
+    .input {
+      width: 100%;
+      padding: 10px;
+      border-radius: 4px;
+      border: 1px solid #ccc;
+      margin-top: 5px;
+    }
+
     .token {
       margin-top: 2rem;
       width: 80%;

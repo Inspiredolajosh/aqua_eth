@@ -1,12 +1,13 @@
-import React from "react";
-import ethereum from "../../assets/images/ethereum.png";
-import bnb from "../../assets/images/bnb.png";
-import dash from "../../assets/images/dash.png";
-import l from "../../assets/images/l.png";
-import air from "../../assets/images/air.png";
-import polygon from "../../assets/images/polygon.png";
+import image1 from "../../assets/images/image-1.png";
+import image2 from "../../assets/images/image-2.png";
+import image3 from "../../assets/images/image-3.png";
+import image4 from "../../assets/images/image-4.png";
+import image5 from "../../assets/images/image-5.png";
+import image6 from "../../assets/images/image-6.png";
+import image7 from "../../assets/images/image-7.png";
+import image8 from "../../assets/images/image-8.png";
 import trust from "../../assets/images/trust.png";
-import crossChain from "../../assets/images/cross-chain.png";
+import cross from "../../assets/images/cross.png";
 import "./BlockChains.scss";
 
 const BlockChains = () => {
@@ -15,12 +16,14 @@ const BlockChains = () => {
       <div className="container">
         <h1>Supported BlockChains</h1>
         <div className="blockchain__icons">
-          <img src={ethereum} alt="ethereum" />
-          <img src={bnb} alt="bnb" />
-          <img src={dash} alt="dash" />
-          <img src={l} alt="l" />
-          <img src={air} alt="empty" />
-          <img src={polygon} alt="polygon" />
+          <img src={image1} alt="ethereum" />
+          <img src={image2} alt="bnb" />
+          <img src={image3} alt="dash" />
+          <img src={image4} alt="l" />
+          <img src={image5} alt="empty" />
+          <img src={image6} alt="polygon" />
+          <img src={image7} alt="polygon" />
+          <img src={image8} alt="polygon" />
         </div>
 
         <div className="row">
@@ -40,7 +43,7 @@ const BlockChains = () => {
           </div>
 
           <div className="col col--2">
-            <img src={crossChain} alt="cross-chain" />
+            <img src={cross} alt="cross-chain" />
             <div className="text-box">
               <h2>Cross-chain Technology</h2>
               <p>

@@ -1,27 +1,14 @@
 import React, { useState, useEffect } from "react";
 import "./NavBar.scss";
+import Modal from "../../components/modal/Modal";
 import logo from "../../assets/images/logo.png";
 import Overlay from "../../components/overlay/Overlay";
 import { NavLink } from "react-router-dom";
-import NetworkPopup from "../NetworkPopup/networkPopup";
-import { useMyContext } from "../../../myContext";
-import { ethers } from "ethers";
-import ErrorNotification from "../error/errorNotification"; // Import ErrorNotification
+import { useStore } from '../../store';
 
 const NavBar = () => {
   const [menuOpen, setMenuOpen] = useState(false);
-  const [isConnected, setIsConnected] = useState(
-    localStorage.getItem("isConnected") === "true"
-  );
-  const [error, setError] = useState(null); // Initialize error state
-
-  const {
-    disconnectWallet,
-    switchNetwork,
-    toggleNetworkPopup,
-    state,
-    connectWallet,
-  } = useMyContext();
+  const { isModalOpen, selectedChain, address, connected, openModal, closeModal, selectChain, saveAddress, setConnected } = useStore();
 
   const handleClick = () => {
     setMenuOpen(!menuOpen);
@@ -31,30 +18,21 @@ const NavBar = () => {
     setMenuOpen(false);
   };
 
-  const handleConnectWallet = async () => {
-    if (!window.ethereum) {
-      setError(
-        "MetaMask or a compatible wallet is not detected. Please install and configure it to use this DApp."
-      );
-      return;
-    }
-
-    toggleNetworkPopup();
+  const handleConnectWallet = (event) => {
+    event.preventDefault();
+    openModal();
   };
 
-  const handleNetworkSelection = async (network) => {
-    switchNetwork(network);
-    toggleNetworkPopup();
-
-    connectWallet(network);
-    setIsConnected(true);
-    localStorage.setItem("isConnected", "true");
+  const handleCloseModal = () => {
+    closeModal();
   };
 
-  const handleDisconnectWallet = () => {
-    disconnectWallet();
-    setIsConnected(false);
-    localStorage.setItem("isConnected", "false");
+  const handleChainSelection = (chain) => {
+    selectChain(chain);
+  };
+
+  const handleAddressSave = (address) => {
+    saveAddress(address);
   };
 
   useEffect(() => {
@@ -63,36 +41,40 @@ const NavBar = () => {
     } else {
       document.body.classList.remove("menu-open");
     }
-
+    // Clean up the class when the component unmounts
     return () => {
       document.body.classList.remove("menu-open");
     };
   }, [menuOpen]);
 
-  function shortenEthereumAddress(address, length = 6) {
-    if (!address) return null;
-    if (address.length <= 2 + length) return address;
+  useEffect(() => {
+    const connectedStatus = localStorage.getItem("connected");
+    if (connectedStatus === "true") {
+      setConnected(true);
+    }
+  }, []);
+  
+  useEffect(() => {
+    localStorage.setItem("connected", connected.toString());
+  }, [connected]);
 
-    const start = address.substring(0, length);
-    const end = address.substring(address.length - length);
-    return `${start}...${end}`;
-  }
+  const handleConnectButtonClick = () => {
+    if (connected) {
+      setConnected(false);
+    } else {
+      openModal();
+    }
+  };
+
+
+
 
   return (
     <nav className="nav">
-      {error && (
-        <ErrorNotification
-          message={error}
-          onClose={() => setError(null)}
-          timeout={5000} // Adjust the timeout duration (5 seconds)
-        />
-      )}
-
       <div className="container">
         <div className="logo">
           <img src={logo} alt="logo" />
         </div>
-
         <div className={`nav__links ${menuOpen ? "open" : ""}`}>
           <NavLink
             to="/"
@@ -126,25 +108,10 @@ const NavBar = () => {
 
 
         <div className="nav__btn">
-          {isConnected ? (
-            <>
-              <div className="connected-info">
-                <span className="wallet-address">
-                  {state.defaultAccount &&
-                    shortenEthereumAddress(state.defaultAccount, 10)}
-                </span>
-              </div>
-              <button
-                onClick={handleDisconnectWallet}
-                style={{ marginRight: "10px", fontSize: "12px" }}
-              >
-                Disconnect
-              </button>
-            </>
+          {connected ? (
+            <button onClick={handleConnectButtonClick}>Disconnect</button>
           ) : (
-            <button onClick={handleConnectWallet} style={{ fontSize: "12px" }}>
-              Connect Wallet
-            </button>
+            <button onClick={handleConnectButtonClick}>Connect Wallet</button>
           )}
         </div>
 
@@ -155,11 +122,16 @@ const NavBar = () => {
         </div>
       </div>
 
-      {state.isNetworkPopupOpen && (
-        <NetworkPopup
-          onClose={() => toggleNetworkPopup()}
-          onSelectNetwork={handleNetworkSelection}
-        />
+      {isModalOpen && (
+        <>
+          <Overlay />
+          <Modal
+            isOpen={isModalOpen}
+            onClose={handleCloseModal}
+            onChainSelect={handleChainSelection}
+            onSaveAddress={handleAddressSave}
+          />
+        </>
       )}
     </nav>
   );
