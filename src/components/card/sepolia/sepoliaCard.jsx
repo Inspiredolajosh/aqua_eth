@@ -1,84 +1,140 @@
 // SepoliaCard.js
 
 import React, { useState, useEffect } from "react";
- // Assuming the Modal component is in the same directory
+import Modal from 'react-modal';
 import "./scss/sepoliaCard.scss";
 import logo from "../../../assets/images/logo.png";
 import { ethers } from "ethers";
 import sepoliaABI from "./sepoliaABI.json";
+import { BigNumber } from 'bignumber.js';
+
 
 const SepoliaCard = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [amount, setAmount] = useState(0);
+  const [numberOfTokens, setNumberOfTokens] = useState(0);
+  const [presalePrice, setPresalePrice] = useState(60000000000000); // Initial presale price
+  const [dollarRate, setDollarRate] = useState(0); // Initial dollar rate, fetched dynamically
+  const [modalText, setModalText] = useState('');
+  const [modalIsOpen, setIsOpen] = useState(false);
 
-  const handleBuyNowClick = () => {
-    console.log("Buy Now button clicked!");
-    setIsModalOpen(true);
+  Modal.setAppElement('#root'); 
+
+  const customStyles = {
+    content: {
+      top: '50%',
+      left: '50%',
+      right: 'auto',
+      bottom: 'auto',
+      marginRight: '-50%',
+      transform: 'translate(-50%, -50%)',
+      backgroundColor: 'white',
+      border: 'none',
+      boxShadow: '0 4px 8px rgba(0, 0, 0, 0.2)',
+      padding: '40px',
+      borderRadius: '10px',
+      maxWidth: '400px',
+      width: '90%',
+      textAlign: 'center',
+    },
   };
 
-  const handleAmountChange = (event) => {
-    setAmount(event.target.value);
-  };
+
+//   const handleBuyNowClick = () => {
+//     console.log("Buy Now button clicked!");
+//     setIsModalOpen(true);
+//   };
+
+//   const handleAmountChange = (event) => {
+//     setAmount(event.target.value);
+//     // Assuming the input is the number of tokens, you can set the number of tokens in the state here
+//     setNumberOfTokens(event.target.value);
+// };
+
+
+function openModal() {
+  setIsOpen(true);
+}
+
+function closeModal() {
+  setIsOpen(false);
+}
+  // useEffect(() => {
+  //   const checkContractConnection = async () => {
+  //     try {
+  //       if (typeof window.ethereum !== 'undefined') {
+  //         const provider = new ethers.providers.Web3Provider(window.ethereum);
+  //         const signer = provider.getSigner();
+  //         const contractAddress = '0x2b970ae5E35332bC0a92B919D09A3d6c2Ec9Effe';
+  //         const contractABI = sepoliaABI;
+  //         const contract = new ethers.Contract(contractAddress, contractABI, signer);
+
+  //         // Check if contract is connected
+  //         if (contract.provider) {
+  //           console.log("Contract connected:", contract);
+  //         } else {
+  //           console.log("Contract not connected");
+  //         }
+  //       }
+  //     } catch (error) {
+  //       console.error('Failed to connect to contract:', error);
+  //     }
+  //   };
+
+  //   checkContractConnection();
+  // }, []);
 
   useEffect(() => {
-    const checkContractConnection = async () => {
-      try {
-        if (typeof window.ethereum !== 'undefined') {
-          const provider = new ethers.providers.Web3Provider(window.ethereum);
-          const signer = provider.getSigner();
-          const contractAddress = '0x2b970ae5E35332bC0a92B919D09A3d6c2Ec9Effe';
-          const contractABI = sepoliaABI;
-          const contract = new ethers.Contract(contractAddress, contractABI, signer);
-
-          // Check if contract is connected
-          if (contract.provider) {
-            console.log("Contract connected:", contract);
-          } else {
-            console.log("Contract not connected");
-          }
+    const fetchDollarRate = async () => {
+        try {
+            const response = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=ethereum&vs_currencies=usd');
+            const data = await response.json();
+            setDollarRate(data.ethereum.usd); // Update the dollar rate for Ethereum (ETH)
+        } catch (error) {
+            console.error('Failed to fetch dollar rate:', error);
         }
-      } catch (error) {
-        console.error('Failed to connect to contract:', error);
-      }
     };
 
-    checkContractConnection();
-  }, []);
+    fetchDollarRate();
+}, []);
 
 
-  const handleBuy = async () => {
-    const provider = new ethers.providers.Web3Provider(window.ethereum);
+const handleBuy = async () => {
+  const provider = new ethers.providers.Web3Provider(window.ethereum);
+  const signer = provider.getSigner();
+  const contractAddress = '0x2b970ae5E35332bC0a92B919D09A3d6c2Ec9Effe';
+  const contractABI = sepoliaABI; // Replace sepoliaABI with the actual contract ABI
 
-    try {
-      await window.ethereum.request({ method: 'eth_requestAccounts' }); // Use eth_requestAccounts instead of enable
-      const signer = provider.getSigner();
-      const contractAddress = '0x2b970ae5E35332bC0a92B919D09A3d6c2Ec9Effe';
-      const contractABI = sepoliaABI;
-      const contract = new ethers.Contract(contractAddress, contractABI, signer);
+  const contract = new ethers.Contract(contractAddress, contractABI, signer);
 
-      const price = ethers.utils.parseEther('0.00006');
-      const transactionParameters = {
-        value: price,
-      };
+  const price = new BigNumber(numberOfTokens).times(new BigNumber(presalePrice));
 
-      const contractWithSigner = contract.connect(signer);
-      const transaction = await contractWithSigner.presale(amount, transactionParameters);
-      await transaction.wait();
+  try {
+    const transaction = await contract.presale(numberOfTokens, {
+      value: price.toString(10), // Ensure value is in base 10 string format
+    });
+    await transaction.wait();
 
-      window.alert('Token bought Successfully!');
-    } catch (error) {
-      console.error(error);
-      window.alert('Failed to buy. Please try again.');
-    }
-  };
-
-
-  
+    // Handle success, display message, or perform any other action here
+    setModalText('Purchase Successful.');
+    openModal();
+  } catch (error) {
+    // Handle error
+    setModalText('An error occurred. Please try again.');
+    openModal();
+    console.error(error);
+  }
+};;
 
 
-  const closeModal = () => {
-    setIsModalOpen(false);
-  };
+
+
+
+
+
+  const priceInDollars = ((numberOfTokens * presalePrice) / 10**18) * dollarRate; // Assuming 18 decimals
+  const formattedPriceInDollars = priceInDollars.toFixed(2); // Formatting to 2 decimal places
+
 
   return (
     <div className="card">
@@ -139,24 +195,52 @@ const SepoliaCard = () => {
           </div>
         </div>
 
-        <div className="amount-input">
-            <label htmlFor="amount">Amount:</label>
-            <input
-              type="number"
-              id="amount"
-              name="amount"
-              value={amount}
-              onChange={handleAmountChange}
-            />
-          </div>
-          
-        {/* Buy button */}
-        <button className="buy-button" onClick={handleBuy}>
-          Buy Now
-        </button>
+        <div className="input-container">
+                    <label className="input-label" htmlFor="tokenAmountInput">
+                        Amount:
+                    </label>
+                    <input
+                        className="input-field"
+                        type="text"
+                        id="tokenAmountInput"
+                        value={numberOfTokens}
+                        onChange={(e) => setNumberOfTokens(e.target.value)}
+                    />
+                </div>
+                <div className="price-container">
+                    <p>Price: {formattedPriceInDollars}$</p>
+                    {/* <p>Dollar Rate for Ethereum: {dollarRate}</p> */}
+                </div>
 
-  
-      </div>
+                <button className="buy-button" onClick={handleBuy}>
+                    Buy
+                </button>
+            </div>
+
+               {/* Pop-up */}
+               <Modal
+                 isOpen={modalIsOpen}
+                 onRequestClose={closeModal}
+                 style={customStyles}
+                 contentLabel="Example Modal"
+                 appElement={document.getElementById('root')}
+            >
+                  <h2 style={{ marginBottom: '20px', fontSize: '24px', fontWeight: 'bold' }}>{modalText}</h2>
+  <button
+    style={{
+      padding: '10px 20px',
+      backgroundColor: '#D36A24',
+      color: 'white',
+      border: 'none',
+      borderRadius: '5px',
+      cursor: 'pointer',
+      fontSize: '16px',
+    }}
+    onClick={closeModal}
+  >
+    Close
+  </button>
+</Modal>
     </div>
   );
 };

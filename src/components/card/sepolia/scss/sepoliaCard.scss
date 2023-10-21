@@ -24,20 +24,53 @@ $bp-smallest: 31.25em; // 500px
 
 
     .buy-button {
-        background-color:  #D36A24;
-        color: var(--color-white);
-        padding: 1.5rem 3rem;
-        font-size: 1.6rem;
-        border: none;
-        border-radius: 1rem;
-        cursor: pointer;
-        transition: background-color 0.3s;
-        margin-top: 2rem;
+      background-color:  #D36A24;
+      color: var(--color-white);
+      padding: 1.5rem 3rem;
+      font-size: 1.6rem;
+      border: none;
+      border-radius: 1rem;
+      cursor: pointer;
+      transition: background-color 0.3s;
+      margin-top: 2px; 
     
         &:hover {
           background-color: var(--color-primary);
         }
       }
+
+
+
+      .input-container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        margin-bottom: 20px;
+    }
+    
+    .input-label {
+        font-size: 12px;
+        margin-bottom: 5px;
+        display: flex;
+        justify-content: center;
+    }
+    
+    .input-field {
+        padding: 10px;
+        font-size: 16px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        width: 100%;
+        box-sizing: border-box;
+    }
+    
+    .price-container {
+        display: flex;
+        justify-content: center;
+    }
+    
+  
+    
 
     .sale-live {
       display: flex;

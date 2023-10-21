@@ -1,5 +1,6 @@
 import React from "react";
 import "./HomePage.scss";
+import { Link } from "react-router-dom"; 
 import logo from "../../assets/images/logo.png";
 import BlockChains from "../../components/blockchains/BlockChains";
 import Launch from "../../components/launch/Launch";
@@ -19,7 +20,9 @@ const HomePage = () => {
               by offering a robust and streamlined launchpad platform, enabling
               projects to seamlessly deploy on various blockchains.
             </p>
-            <button className="hero-btn">Launch App</button>
+            <Link to="/launchpad">
+              <button className="hero-btn">Launch App</button>
+            </Link>
           </div>
 
           <div className="col col--2">

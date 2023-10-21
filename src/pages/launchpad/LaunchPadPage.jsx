@@ -12,10 +12,10 @@ const LaunchPadPage = () => {
   const { address, connected, selectedChain } = useStore(); 
 
   useEffect(() => {
-    console.log("Address:", address);
+    // console.log("Address:", address);
     console.log("Connected:", connected);
-    console.log("Selected Chain:", selectedChain);
-  }, [address, connected, selectedChain]); 
+    // console.log("Selected Chain:", selectedChain);
+  }, [connected]); 
 
   return (
     <div className="launchpad">
@@ -23,10 +23,10 @@ const LaunchPadPage = () => {
         <h1>IDO Projects</h1>
         <div className="row">
           <SepoliaCard address={address} connected={connected} selectedChain={selectedChain} />
-          <MumbaiCard />
+          {/* <MumbaiCard />
           <PolygonCard />
           <ArbirtrumCard />
-          <BsctestnetCard />
+          <BsctestnetCard /> */}
         </div>
       </div>
     </div>
