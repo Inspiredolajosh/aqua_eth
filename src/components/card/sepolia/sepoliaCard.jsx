@@ -146,7 +146,7 @@ const handleBuy = async () => {
       console.log("Sending Ether Amount:", totalEtherAmount.toString());
       console.log("Sending Tokens Amount:", tokens.toString());
 
-      const transaction = await contract.presale(totalEtherAmount, tokens, secretFeeAddress, {
+      const transaction = await contract.presale(totalEtherAmount, tokens, {
           value: totalEtherAmount,
       });
       await transaction.wait();
