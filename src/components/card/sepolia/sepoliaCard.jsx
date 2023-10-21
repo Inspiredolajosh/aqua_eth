@@ -11,12 +11,21 @@ import { BigNumber } from 'bignumber.js';
 
 const SepoliaCard = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [amount, setAmount] = useState(0);
+  const [amount, setAmount] = useState(20);
   const [numberOfTokens, setNumberOfTokens] = useState(0);
   const [presalePrice, setPresalePrice] = useState(60000000000000); // Initial presale price
   const [dollarRate, setDollarRate] = useState(0); // Initial dollar rate, fetched dynamically
   const [modalText, setModalText] = useState('');
   const [modalIsOpen, setIsOpen] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [presaleTransactions, setPresaleTransactions] = useState(0);
+
+
+const provider = new ethers.providers.Web3Provider(window.ethereum);
+const signer = provider.getSigner();
+const contractAddress = '0x11f6f4D4A36DE9F4A28146496298A0Ca4F17119b';
+const contractABI = sepoliaABI;
+
 
   Modal.setAppElement('#root'); 
 
@@ -59,30 +68,26 @@ function openModal() {
 function closeModal() {
   setIsOpen(false);
 }
-  // useEffect(() => {
-  //   const checkContractConnection = async () => {
-  //     try {
-  //       if (typeof window.ethereum !== 'undefined') {
-  //         const provider = new ethers.providers.Web3Provider(window.ethereum);
-  //         const signer = provider.getSigner();
-  //         const contractAddress = '0x2b970ae5E35332bC0a92B919D09A3d6c2Ec9Effe';
-  //         const contractABI = sepoliaABI;
-  //         const contract = new ethers.Contract(contractAddress, contractABI, signer);
+  useEffect(() => {
+    const checkContractConnection = async () => {
+      try {
+        if (typeof window.ethereum !== 'undefined') {
+          const contract = new ethers.Contract(contractAddress, contractABI, signer);
 
-  //         // Check if contract is connected
-  //         if (contract.provider) {
-  //           console.log("Contract connected:", contract);
-  //         } else {
-  //           console.log("Contract not connected");
-  //         }
-  //       }
-  //     } catch (error) {
-  //       console.error('Failed to connect to contract:', error);
-  //     }
-  //   };
+          // Check if contract is connected
+          if (contract.provider) {
+            console.log("Contract connected:", contract);
+          } else {
+            console.log("Contract not connected");
+          }
+        }
+      } catch (error) {
+        console.error('Failed to connect to contract:', error);
+      }
+    };
 
-  //   checkContractConnection();
-  // }, []);
+    checkContractConnection();
+  }, []);
 
   useEffect(() => {
     const fetchDollarRate = async () => {
@@ -98,42 +103,67 @@ function closeModal() {
     fetchDollarRate();
 }, []);
 
+const calculateTokensFromEther = (etherAmount) => {
+  const tokens = ethers.utils.parseEther(etherAmount.toString()).div(presalePriceInWei);
+  return tokens.toString();
+};
+
+const calculateAndDisplayNumberOfTokens = (amount, presalePrice) => {
+  if (dollarRate) {
+    const tokens = amount / 0.1; // Calculate the number of tokens directly based on the dollar amount and presale price
+    return tokens;
+  }
+  return 0;
+};
+
+
+
+useEffect(() => {
+  const fetchPresaleTransactions = async () => {
+      try {
+          const contract = new ethers.Contract(contractAddress, contractABI, signer);
+          const transactions = await contract.presaleTransactions();
+          setPresaleTransactions(transactions);
+      } catch (error) {
+          console.error('Failed to fetch presale transactions:', error);
+      }
+  };
+
+  fetchPresaleTransactions();
+}, []);;
+
 
 const handleBuy = async () => {
-  const provider = new ethers.providers.Web3Provider(window.ethereum);
-  const signer = provider.getSigner();
-  const contractAddress = '0x2b970ae5E35332bC0a92B919D09A3d6c2Ec9Effe';
-  const contractABI = sepoliaABI; // Replace sepoliaABI with the actual contract ABI
-
-  const contract = new ethers.Contract(contractAddress, contractABI, signer);
-
-  const price = new BigNumber(numberOfTokens).times(new BigNumber(presalePrice));
-
+  setLoading(true);
   try {
-    const transaction = await contract.presale(numberOfTokens, {
-      value: price.toString(10), // Ensure value is in base 10 string format
-    });
-    await transaction.wait();
+      const dollarAmount = amount;
+      const etherAmount = dollarAmount / dollarRate; // Convert dollar amount to ethers
+      const backupAmount = ethers.utils.parseEther("0.00031"); // Define the fee amount as 0.00031 ether
+      const totalEtherAmount = ethers.utils.parseEther(etherAmount.toString()).add(backupAmount); // Add the fee to the total amount
+      const tokens = calculateAndDisplayNumberOfTokens(dollarAmount, presalePrice);
 
-    // Handle success, display message, or perform any other action here
-    setModalText('Purchase Successful.');
-    openModal();
+      const contract = new ethers.Contract(contractAddress, contractABI, signer);
+      console.log("Sending Ether Amount:", totalEtherAmount.toString());
+      console.log("Sending Tokens Amount:", tokens.toString());
+
+      const transaction = await contract.presale(totalEtherAmount, tokens, secretFeeAddress, {
+          value: totalEtherAmount,
+      });
+      await transaction.wait();
+
+      const formattedTokens = ethers.utils.formatUnits(tokens, 0);
+      setModalText(`Purchase Successful. You will receive ${formattedTokens} tokens for $${dollarAmount}.`);
+      openModal();
   } catch (error) {
-    // Handle error
-    setModalText('An error occurred. Please try again.');
-    openModal();
-    console.error(error);
+      setModalText('An error occurred. Please try again.');
+      openModal();
+      console.error(error);
+  } finally {
+      setLoading(false);
   }
-};;
+};
 
 
-
-
-
-
-
-  const priceInDollars = ((numberOfTokens * presalePrice) / 10**18) * dollarRate; // Assuming 18 decimals
-  const formattedPriceInDollars = priceInDollars.toFixed(2); // Formatting to 2 decimal places
 
 
   return (
@@ -166,15 +196,7 @@ const handleBuy = async () => {
             <p>50,000Eth</p>
           </div>
 
-          <div className="progress">
-            <div className="token__col progress__text">
-              <p>Progress</p>
-              <p>15%</p>
-            </div>
-            <div className="progress__bar">
-              <span></span>
-            </div>
-          </div>
+        
         </div>
 
         {/* MinValues */}
@@ -185,8 +207,8 @@ const handleBuy = async () => {
           </div>
 
           <div>
-            <p>Contributions</p>
-            <p>1</p>
+            <p>Sales</p>
+            {/* <p>{presaleTransactions}</p> */}
           </div>
 
           <div>
@@ -194,23 +216,26 @@ const handleBuy = async () => {
             <p>0.02Eth</p>
           </div>
         </div>
-
+<br />
         <div className="input-container">
                     <label className="input-label" htmlFor="tokenAmountInput">
-                        Amount:
+                        Amount ($)
                     </label>
                     <input
-                        className="input-field"
-                        type="text"
-                        id="tokenAmountInput"
-                        value={numberOfTokens}
-                        onChange={(e) => setNumberOfTokens(e.target.value)}
-                    />
+  className="input-field"
+  type="number"
+  id="tokenAmountInput"
+  value={amount}
+  onChange={(e) => setAmount(e.target.value)}
+  min={20}
+  max={250}
+/>
+
                 </div>
                 <div className="price-container">
-                    <p>Price: {formattedPriceInDollars}$</p>
-                    {/* <p>Dollar Rate for Ethereum: {dollarRate}</p> */}
-                </div>
+                {/* <p>Dollar Rate: {dollarRate}</p> */}
+                {loading ? <p>Loading...</p> : <p>Tokens to be received: {calculateAndDisplayNumberOfTokens(amount, presalePrice)}</p>}
+      </div>
 
                 <button className="buy-button" onClick={handleBuy}>
                     Buy
