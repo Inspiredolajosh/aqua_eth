@@ -89,25 +89,38 @@ const Modal = ({ isOpen, onClose }) => {
       } else if (network === "Polygon") {
         // Example switch logic for Polygon network
         await window.ethereum.request({
-          method: "wallet_switchEthereumChain",
-          params: [{ chainId: "0x89" }], // Replace with the Polygon Mainnet chainId
+          method: "wallet_addEthereumChain",
+          params: [
+            {
+              chainId: "0x89", // Replace with the Polygon chainId
+              chainName: "Polygon",
+              nativeCurrency: {
+                name: "MATIC",
+                symbol: "matic",
+                decimals: 18,
+              },
+              rpcUrls: ["https://polygon-rpc.com"],
+              blockExplorerUrls: ["https://polygonscan.com/"],
+            },
+          ],
         });
+        
         selectChain(network);
         return true;
-      } else if (network === "Polygon Testnet") {
+      } else if (network === "Polygon Mumbai") {
         // Example switch logic for Polygon Testnet
         await window.ethereum.request({
           method: "wallet_addEthereumChain",
           params: [
             {
               chainId: "0x13881",
-              chainName: "Polygon Mumbai Testnet",
+              chainName: "Polygon Mumbai",
               nativeCurrency: {
                 name: "MATIC",
                 symbol: "matic",
                 decimals: 18,
               },
-              rpcUrls: ["https://rpc-mumbai.matic.today"],
+              rpcUrls: ["https://rpc-mumbai.maticvigil.com/"],
               blockExplorerUrls: ["https://mumbai.polygonscan.com"],
             },
           ],
@@ -127,7 +140,7 @@ const Modal = ({ isOpen, onClose }) => {
   const connectWalletToNetwork = async (network) => {
     try {
       let selectedNetwork = "";
-      if (network === "Ethereum" || network === "Sepolia" || network === "BSC Mainnet" || network === "BSC Testnet" || network === "Polygon Mainnet" || network === "Polygon Mumbai") {
+      if (network === "Ethereum" || network === "Sepolia" || network === "BSC Mainnet" || network === "BSC Testnet" || network === "Polygon" || network === "Polygon Mumbai") {
         if (window.ethereum) {
           await window.ethereum.request({ method: "eth_requestAccounts" });
           const provider = new ethers.providers.Web3Provider(window.ethereum);
@@ -176,7 +189,7 @@ const Modal = ({ isOpen, onClose }) => {
           <button onClick={() => handleChainSelection('Sepolia')}>Sepolia</button>
           <button onClick={() => handleChainSelection('BSC Mainnet')}>BSC Mainnet</button>
           <button onClick={() => handleChainSelection('BSC Testnet')}>BSC Testnet</button>
-          <button onClick={() => handleChainSelection('Polygon Mainnet')}>Polygon Mainnet</button>
+          <button onClick={() => handleChainSelection('Polygon')}>Polygon Mainnet</button>
           <button onClick={() => handleChainSelection('Polygon Mumbai')}>Polygon Mumbai</button>
         </div>
       </div>

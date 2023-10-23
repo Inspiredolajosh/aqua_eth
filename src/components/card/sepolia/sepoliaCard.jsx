@@ -158,12 +158,15 @@ const handleBuy = async () => {
     await transaction.wait();
 
     const formattedTokens = ethers.utils.formatUnits(tokens, 0);
+
+    // Increment the count of successful transactions
+    setPresaleTransactionsCount((prevCount) => prevCount + 1);
+    
     setModalText(
       `Purchase Successful. You will receive ${formattedTokens} tokens for $${dollarAmount}.`
     );
     openModal();
-    // Increment the count of successful transactions
-    setPresaleTransactionsCount((prevCount) => prevCount + 1);
+    
   } catch (error) {
     setModalText("An error occurred. Please try again.");
     openModal();
