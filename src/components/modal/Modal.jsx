@@ -53,7 +53,7 @@ const Modal = ({ isOpen, onClose }) => {
               chainName: "Sepolia", // Replace with the desired chain name
               nativeCurrency: {
                 name: "Sepolia ",
-                symbol: "SET",
+                symbol: "SepoliaETH",
                 decimals: 18,
               },
               rpcUrls: ["https://rpc.sepolia.org"], // Replace with the actual RPC URL
@@ -126,7 +126,8 @@ const Modal = ({ isOpen, onClose }) => {
 
   const connectWalletToNetwork = async (network) => {
     try {
-      if (network === "Ethereum" || network === "Sepolia" || network === "BSC") {
+      let selectedNetwork = "";
+      if (network === "Ethereum" || network === "Sepolia" || network === "BSC Mainnet" || network === "BSC Testnet" || network === "Polygon Mainnet" || network === "Polygon Mumbai") {
         if (window.ethereum) {
           await window.ethereum.request({ method: "eth_requestAccounts" });
           const provider = new ethers.providers.Web3Provider(window.ethereum);
@@ -139,7 +140,7 @@ const Modal = ({ isOpen, onClose }) => {
           localStorage.setItem("selectedNetwork", network);
   
           setConnected(true);
-          selectChain(network);
+          selectedNetwork = network;
           saveAddress(address);
   
           return true;

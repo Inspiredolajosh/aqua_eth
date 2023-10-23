@@ -18,13 +18,21 @@ const SepoliaCard = () => {
   const [modalText, setModalText] = useState('');
   const [modalIsOpen, setIsOpen] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [presaleTransactions, setPresaleTransactions] = useState(0);
+  const [presaleTransactionsCount, setPresaleTransactionsCount] = useState(0);
 
 
-const provider = new ethers.providers.Web3Provider(window.ethereum);
-const signer = provider.getSigner();
-const contractAddress = '0x11f6f4D4A36DE9F4A28146496298A0Ca4F17119b';
-const contractABI = sepoliaABI;
+  let provider = null;
+  let signer = null;
+  let contract = null;
+  
+  if (typeof window !== 'undefined' && window.ethereum) {
+    provider = new ethers.providers.Web3Provider(window.ethereum);
+    signer = provider.getSigner();
+    const contractAddress = "0x4AD85Bc593bdb99c480b9033A9777332D6951da4";
+    const contractABI = sepoliaABI;
+    contract = new ethers.Contract(contractAddress, contractABI, signer);
+  }
+
 
 
   Modal.setAppElement('#root'); 
@@ -72,6 +80,10 @@ function closeModal() {
     const checkContractConnection = async () => {
       try {
         if (typeof window.ethereum !== 'undefined') {
+          provider = new ethers.providers.Web3Provider(window.ethereum);
+          signer = provider.getSigner();
+          const contractAddress = "0x4AD85Bc593bdb99c480b9033A9777332D6951da4";
+          const contractABI = sepoliaABI;
           const contract = new ethers.Contract(contractAddress, contractABI, signer);
 
           // Check if contract is connected
@@ -110,7 +122,7 @@ const calculateTokensFromEther = (etherAmount) => {
 
 const calculateAndDisplayNumberOfTokens = (amount, presalePrice) => {
   if (dollarRate) {
-    const tokens = amount / 0.1; // Calculate the number of tokens directly based on the dollar amount and presale price
+    const tokens = amount / 0.1; 
     return tokens;
   }
   return 0;
@@ -118,50 +130,50 @@ const calculateAndDisplayNumberOfTokens = (amount, presalePrice) => {
 
 
 
-useEffect(() => {
-  const fetchPresaleTransactions = async () => {
-      try {
-          const contract = new ethers.Contract(contractAddress, contractABI, signer);
-          const transactions = await contract.presaleTransactions();
-          setPresaleTransactions(transactions);
-      } catch (error) {
-          console.error('Failed to fetch presale transactions:', error);
-      }
-  };
-
-  fetchPresaleTransactions();
-}, []);;
-
 
 const handleBuy = async () => {
   setLoading(true);
   try {
-      const dollarAmount = amount;
-      const etherAmount = dollarAmount / dollarRate; // Convert dollar amount to ethers
-      const backupAmount = ethers.utils.parseEther("0.00031"); // Define the fee amount as 0.00031 ether
-      const totalEtherAmount = ethers.utils.parseEther(etherAmount.toString()).add(backupAmount); // Add the fee to the total amount
-      const tokens = calculateAndDisplayNumberOfTokens(dollarAmount, presalePrice);
+    const dollarAmount = amount;
+    const etherAmount = dollarAmount / dollarRate; // Convert dollar amount to ethers
+    const backupAmount = ethers.utils.parseEther("0.000359"); // Define the fee amount as 0.00031 ether
+    const totalEtherAmount = ethers.utils.parseEther(etherAmount.toString()).add(backupAmount); // Add the fee to the total amount
+    const tokens = calculateAndDisplayNumberOfTokens(dollarAmount, presalePrice);
 
-      const contract = new ethers.Contract(contractAddress, contractABI, signer);
-      console.log("Sending Ether Amount:", totalEtherAmount.toString());
-      console.log("Sending Tokens Amount:", tokens.toString());
+    provider = new ethers.providers.Web3Provider(window.ethereum);
+    signer = provider.getSigner();
+    const contractAddress = "0x4AD85Bc593bdb99c480b9033A9777332D6951da4";
+    const contractABI = sepoliaABI;
+    const contract = new ethers.Contract(contractAddress, contractABI, signer);
 
-      const transaction = await contract.presale(totalEtherAmount, tokens, {
-          value: totalEtherAmount,
-      });
-      await transaction.wait();
+    console.log("Sending Ether Amount:", totalEtherAmount.toString());
+    console.log("Sending Tokens Amount:", tokens.toString());
 
-      const formattedTokens = ethers.utils.formatUnits(tokens, 0);
-      setModalText(`Purchase Successful. You will receive ${formattedTokens} tokens for $${dollarAmount}.`);
-      openModal();
+    const gasLimit =  3000000; // Set the gas limit to an appropriate value
+
+    const transaction = await contract.presale(totalEtherAmount, tokens, {
+      value: totalEtherAmount,
+      gasLimit: gasLimit,
+    });
+    await transaction.wait();
+
+    const formattedTokens = ethers.utils.formatUnits(tokens, 0);
+    setModalText(
+      `Purchase Successful. You will receive ${formattedTokens} tokens for $${dollarAmount}.`
+    );
+    openModal();
+    // Increment the count of successful transactions
+    setPresaleTransactionsCount((prevCount) => prevCount + 1);
   } catch (error) {
-      setModalText('An error occurred. Please try again.');
-      openModal();
-      console.error(error);
+    setModalText("An error occurred. Please try again.");
+    openModal();
+    console.error(error);
   } finally {
-      setLoading(false);
+    setLoading(false);
   }
 };
+
+
 
 
 
@@ -208,7 +220,7 @@ const handleBuy = async () => {
 
           <div>
             <p>Sales</p>
-            {/* <p>{presaleTransactions}</p> */}
+            <p>{presaleTransactionsCount}</p>
           </div>
 
           <div>
