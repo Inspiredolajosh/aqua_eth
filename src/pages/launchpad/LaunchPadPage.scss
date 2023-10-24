@@ -4,7 +4,6 @@ $bp-medium: 56.25em; // 900px
 $bp-small: 37.5em; // 600px
 $bp-phone: 48em;
 $bp-smallest: 31.25em; // 500px
-
 .launchpad {
   display: flex;
   justify-content: center;
@@ -25,10 +24,12 @@ $bp-smallest: 31.25em; // 500px
 
       @media only screen and (max-width: $bp-large) {
         width: 100%; // Set width to 100% for large screens
+        justify-content: center; // Centers the cards for large screens
       }
 
       @media only screen and (max-width: $bp-medium) {
         gap: 2rem;
+        justify-content: center; // Centers the cards for medium screens
       }
 
       @media only screen and (max-width: $bp-phone) {
