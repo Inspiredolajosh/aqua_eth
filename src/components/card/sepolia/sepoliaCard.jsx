@@ -171,7 +171,7 @@ const handleBuy = async () => {
         openModal();
       }
     } else {
-      setModalText("Please switch to the Bsc testnet network.");
+      setModalText("Please disconnect and switch to the Sepolia testnet network.");
       openModal();
     }
   } catch (error) {

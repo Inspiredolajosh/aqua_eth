@@ -171,7 +171,7 @@ const handleBuy = async () => {
         openModal();
       }
     } else {
-      setModalText("Please switch to the Polygon Testnet network.");
+      setModalText("Please disconnect and switch to the Polygon Testnet network.");
       openModal();
     }
   } catch (error) {
