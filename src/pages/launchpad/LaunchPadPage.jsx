@@ -22,11 +22,11 @@ const LaunchPadPage = () => {
       <div className="container">
         <h1>IDO Projects</h1>
         <div className="row">
-          <SepoliaCard address={address} connected={connected} selectedChain={selectedChain} />
-          {/* <MumbaiCard />
-          <PolygonCard />
-          <ArbirtrumCard />
-          <BsctestnetCard /> */}
+          <SepoliaCard />
+          <MumbaiCard />
+          {/* <PolygonCard /> */}
+          {/* <ArbirtrumCard /> */}
+          <BsctestnetCard /> 
         </div>
       </div>
     </div>

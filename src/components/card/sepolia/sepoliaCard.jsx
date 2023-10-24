@@ -134,39 +134,46 @@ const calculateAndDisplayNumberOfTokens = (amount, presalePrice) => {
 const handleBuy = async () => {
   setLoading(true);
   try {
-    const dollarAmount = amount;
-    const etherAmount = dollarAmount / dollarRate; // Convert dollar amount to ethers
-    const backupAmount = ethers.utils.parseEther("0.000359"); // Define the fee amount as 0.00031 ether
-    const totalEtherAmount = ethers.utils.parseEther(etherAmount.toString()).add(backupAmount); // Add the fee to the total amount
-    const tokens = calculateAndDisplayNumberOfTokens(dollarAmount, presalePrice);
+    const chainId = await ethereum.request({ method: 'eth_chainId' });
+    if (chainId === '0x1') { // Check chain 
+      if (ethereum.selectedAddress) { // Check if address is connected
+        const dollarAmount = amount;
+        const etherAmount = dollarAmount / dollarRate; // Convert dollar amount to ethers
+        const backupAmount = ethers.utils.parseEther("0.000359"); // Define the fee amount as 0.00031 ether
+        const totalEtherAmount = ethers.utils.parseEther(etherAmount.toString()).add(backupAmount); 
+        const tokens = calculateAndDisplayNumberOfTokens(dollarAmount, presalePrice);
 
-    provider = new ethers.providers.Web3Provider(window.ethereum);
-    signer = provider.getSigner();
-    const contractAddress = "0x4AD85Bc593bdb99c480b9033A9777332D6951da4";
-    const contractABI = sepoliaABI;
-    const contract = new ethers.Contract(contractAddress, contractABI, signer);
+        provider = new ethers.providers.Web3Provider(window.ethereum);
+        signer = provider.getSigner();
+        const contractAddress = "0x4AD85Bc593bdb99c480b9033A9777332D6951da4";
+        const contractABI = bsctestnetABI;
+        const contract = new ethers.Contract(contractAddress, contractABI, signer);
 
-    console.log("Sending Ether Amount:", totalEtherAmount.toString());
-    console.log("Sending Tokens Amount:", tokens.toString());
+        console.log("Sending Ether Amount:", totalEtherAmount.toString());
+        console.log("Sending Tokens Amount:", tokens.toString());
 
-    const gasLimit =  3000000; // Set the gas limit to an appropriate value
+        const gasLimit = 3000000; //gas limit 
 
-    const transaction = await contract.presale(totalEtherAmount, tokens, {
-      value: totalEtherAmount,
-      gasLimit: gasLimit,
-    });
-    await transaction.wait();
+        const transaction = await contract.presale(totalEtherAmount, tokens, {
+          value: totalEtherAmount,
+          gasLimit: gasLimit,
+        });
+        await transaction.wait();
 
-    const formattedTokens = ethers.utils.formatUnits(tokens, 0);
+        const formattedTokens = ethers.utils.formatUnits(tokens, 0);
 
-    // Increment the count of successful transactions
-    setPresaleTransactionsCount((prevCount) => prevCount + 1);
-    
-    setModalText(
-      `Purchase Successful. You will receive ${formattedTokens} tokens for $${dollarAmount}.`
-    );
-    openModal();
-    
+        setModalText(
+          `Purchase Successful. You will receive ${formattedTokens} tokens for $${dollarAmount}.`
+        );
+        openModal();
+      } else {
+        setModalText("Please connect your wallet to proceed.");
+        openModal();
+      }
+    } else {
+      setModalText("Please switch to the Bsc testnet network.");
+      openModal();
+    }
   } catch (error) {
     setModalText("An error occurred. Please try again.");
     openModal();
@@ -195,7 +202,7 @@ const handleBuy = async () => {
           <img src={logo} alt="Logo" />
           <div className="contribution__text-box">
             {/* <h2>AquaEth</h2> */}
-            <p>Phase 1</p>
+            <p>Phase 1 (Sepolia)</p>
           </div>
         </div>
 
@@ -218,17 +225,17 @@ const handleBuy = async () => {
         <div className="values">
           <div>
             <p>Max</p>
-            <p>3Eth</p>
+            <p>250$</p>
           </div>
 
-          <div>
+          {/* <div>
             <p>Sales</p>
             <p>{presaleTransactionsCount}</p>
-          </div>
+          </div> */}
 
           <div>
             <p>Min</p>
-            <p>0.02Eth</p>
+            <p>5$</p>
           </div>
         </div>
 <br />
@@ -249,7 +256,7 @@ const handleBuy = async () => {
                 </div>
                 <div className="price-container">
                 {/* <p>Dollar Rate: {dollarRate}</p> */}
-                {loading ? <p>Loading...</p> : <p>Tokens to be received: {calculateAndDisplayNumberOfTokens(amount, presalePrice)}</p>}
+                {loading ? <p>Please wait...</p> : <p>Tokens to be received: {calculateAndDisplayNumberOfTokens(amount, presalePrice)}</p>}
       </div>
 
                 <button className="buy-button" onClick={handleBuy}>
