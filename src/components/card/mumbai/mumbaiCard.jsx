@@ -146,7 +146,7 @@ const handleBuy = async () => {
         provider = new ethers.providers.Web3Provider(window.ethereum);
         signer = provider.getSigner();
         const contractAddress = "0x0c4E713B8395bD4F028dA3012F49AB0cFD413D14";
-        const contractABI = bsctestnetABI;
+        const contractABI = mumbaiABI;
         const contract = new ethers.Contract(contractAddress, contractABI, signer);
 
         console.log("Sending Ether Amount:", totalEtherAmount.toString());
